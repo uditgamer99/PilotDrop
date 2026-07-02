@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PilotDrop — Research. Launch. Scale.</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --surface3: #20203a;
+    --border: #2a2a3a;
+    --border2: #3a3a50;
+    --accent: #7c3aed;
+    --accent2: #a855f7;
+    --accent3: #c084fc;
+    --green: #10b981;
+    --green2: #34d399;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --cyan: #06b6d4;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --muted2: #9090a8;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Space Grotesk', sans-serif;
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; font-size: 14px; }
+
+  /* ── HEADER ── */
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface);
+    position: sticky; top: 0; z-index: 200;
+    gap: 12px;
+  }
+  .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; }
+  .logo span { color: var(--accent2); }
+  .header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    background: linear-gradient(135deg, var(--green), #059669);
+    color: #fff; font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px;
+    font-family: var(--mono); white-space: nowrap;
+  }
+  .badge-pro {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 20px;
+    font-family: var(--mono);
+  }
+
+  /* ── WORKFLOW BAR ── */
+  .workflow-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    overflow-x: auto; overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .workflow-bar::-webkit-scrollbar { height: 0; }
+  .workflow-steps {
+    display: flex; align-items: center;
+    min-width: max-content; padding: 8px 0;
+    gap: 0;
+  }
+  .wstep {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; cursor: pointer;
+    border-radius: 6px;
+    font-size: 11px; font-weight: 600;
+    color: var(--muted);
+    transition: all 0.2s;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    background: none; font-family: var(--sans);
+  }
+  .wstep:hover { color: var(--text); }
+  .wstep.active {
+    background: rgba(124,58,237,0.15);
+    border-color: rgba(124,58,237,0.4);
+    color: var(--accent3);
+  }
+  .wstep.done { color: var(--green); }
+  .wstep .wnum {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; font-family: var(--mono);
+    flex-shrink: 0;
+  }
+  .wstep.active .wnum { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .wstep.done .wnum { background: var(--green); border-color: var(--green); color: #fff; }
+  .warrow { color: var(--border2); font-size: 12px; padding: 0 2px; flex-shrink: 0; }
+
+  /* ── MAIN ── */
+  .main { padding: 20px 16px; max-width: 960px; margin: 0 auto; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── SECTION TITLE ── */
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .section-sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px; margin-bottom: 14px;
+  }
+  .card-title {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--muted); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ── INPUT ── */
+  .input-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .inp {
+    flex: 1; min-width: 160px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+    color: var(--text); font-family: var(--sans); font-size: 13px;
+    outline: none; transition: border 0.2s;
+    -webkit-appearance: none;
+  }
+  .inp:focus { border-color: var(--accent); }
+  .inp::placeholder { color: var(--muted); }
+  select.inp { cursor: pointer; }
+  textarea.inp { resize: vertical; min-height: 80px; }
+  .inp-label { font-size: 11px; color: var(--muted2); margin-bottom: 4px; font-weight: 500; }
+
+  /* ── BUTTON ── */
+  .btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; border: none; border-radius: 8px;
+    padding: 10px 18px; font-family: var(--sans);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s; white-space: nowrap;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.sm { padding: 7px 12px; font-size: 12px; }
+  .btn.xs { padding: 5px 10px; font-size: 11px; }
+  .btn.outline { background: transparent; border: 1px solid var(--accent); color: var(--accent2); }
+  .btn.green { background: linear-gradient(135deg, var(--green), #059669); }
+  .btn.blue { background: linear-gradient(135deg, var(--blue), #2563eb); }
+  .btn.danger { background: linear-gradient(135deg, var(--red), #dc2626); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* ── RESULT BOX ── */
+  .result-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px;
+    font-size: 13px; line-height: 1.75;
+    white-space: pre-wrap; font-family: var(--mono);
+    color: #c4c4d8; min-height: 60px; display: none;
+    max-height: 400px; overflow-y: auto;
+  }
+  .result-box.show { display: block; }
+  .result-box::-webkit-scrollbar { width: 4px; }
+  .result-box::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+  /* ── RICH RESULT ── */
+  .rich-result { display: none; }
+  .rich-result.show { display: block; }
+
+  /* ── LOADING ── */
+  .loading { display: none; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; margin: 10px 0; }
+  .loading.show { display: flex; }
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid var(--border); border-top-color: var(--accent2);
+    border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── SCORE METERS ── */
+  .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  @media (max-width: 520px) { .score-grid { grid-template-columns: 1fr; } }
+  .score-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+  }
+  .score-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .score-name { font-size: 11px; font-weight: 600; color: var(--muted2); }
+  .score-num { font-size: 18px; font-weight: 700; font-family: var(--mono); }
+  .score-bar { height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+
+  /* ── TAGS ── */
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .niche-tag {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 12px; font-size: 12px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .niche-tag:hover, .niche-tag.selected {
+    background: rgba(124,58,237,0.2);
+    border-color: var(--accent); color: var(--accent2);
+  }
+  .platform-tag {
+    background: rgba(168,85,247,0.12); color: var(--accent2);
+    border: 1px solid rgba(168,85,247,0.25);
+    border-radius: 5px; padding: 3px 9px;
+    font-size: 11px; font-weight: 600; cursor: default;
+  }
+  .platform-btn {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 7px; padding: 7px 12px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; color: var(--text);
+    text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+    font-family: var(--sans);
+  }
+  .platform-btn:hover { border-color: var(--accent2); color: var(--accent2); background: rgba(168,85,247,0.08); }
+
+  /* ── TOGGLE CHIPS ── */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .chip {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 5px 10px; font-size: 12px;
+    cursor: pointer; transition: all 0.2s; font-family: var(--sans);
+    color: var(--muted2); font-weight: 500;
+  }
+  .chip:hover { border-color: var(--border2); color: var(--text); }
+  .chip.active { background: rgba(124,58,237,0.2); border-color: var(--accent); color: var(--accent3); }
+
+  /* ── STATS ── */
+  .stats-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .stat-box {
+    flex: 1; min-width: 90px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+  }
+  .stat-box .val { font-size: 22px; font-weight: 700; font-family: var(--mono); }
+  .stat-box .lbl { font-size: 10px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ── CALC ── */
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px) { .calc-grid { grid-template-columns: 1fr; } }
+  .calc-result {
+    background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(168,85,247,0.06));
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 8px; padding: 16px; margin-top: 14px; display: none;
+  }
+  .calc-result.show { display: block; }
+  .calc-num { font-size: 26px; font-weight: 700; font-family: var(--mono); }
+  .calc-lbl { font-size: 10px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .calc-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 380px) { .calc-mini-grid { grid-template-columns: 1fr; } }
+  .breakeven-bar {
+    height: 8px; background: var(--border); border-radius: 8px;
+    overflow: hidden; margin-top: 8px;
+  }
+  .breakeven-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, var(--green), var(--cyan)); transition: width 0.5s; }
+
+  /* ── TABLE ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .data-table th { text-align: left; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── HOME HERO ── */
+  .hero-title { font-size: 30px; font-weight: 700; letter-spacing: -1px; line-height: 1.2; margin-bottom: 10px; }
+  .hero-title .hl { color: var(--accent2); }
+  .hero-sub { color: var(--muted2); font-size: 14px; line-height: 1.6; margin-bottom: 22px; }
+  .features { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  @media (max-width: 480px) { .features { grid-template-columns: 1fr; } }
+  .feature-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .feature-card:hover { border-color: var(--accent); background: var(--surface2); transform: translateY(-1px); }
+  .feature-icon { font-size: 22px; margin-bottom: 8px; }
+  .feature-name { font-weight: 600; font-size: 13px; margin-bottom: 3px; }
+  .feature-desc { font-size: 11px; color: var(--muted); }
+
+  /* ── WORKFLOW HOME ── */
+  .workflow-home {
+    background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(168,85,247,0.05));
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
+  }
+  .wf-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--accent3); }
+  .wf-steps { display: flex; flex-wrap: wrap; gap: 6px; }
+  .wf-step {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 5px 10px;
+    font-size: 11px; color: var(--muted2); display: flex; align-items: center; gap: 5px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .wf-step:hover { border-color: var(--accent2); color: var(--accent3); }
+  .wf-step .n {
+    background: var(--accent); color: #fff;
+    border-radius: 50%; width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; flex-shrink: 0;
+  }
+  .wf-arr { color: var(--muted); font-size: 10px; }
+
+  /* ── IMAGE UPLOAD ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 10px; padding: 30px 20px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s; position: relative;
+  }
+  .upload-zone:hover { border-color: var(--accent2); background: rgba(168,85,247,0.04); }
+  .upload-zone.drag-over {
+    border-color: var(--accent2); background: rgba(168,85,247,0.1);
+    transform: scale(1.01);
+  }
+  .upload-zone.has-image { padding: 14px; border-style: solid; border-color: var(--accent2); }
+  .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-text { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .upload-sub { font-size: 11px; color: var(--muted); }
+  .upload-sub.desktop-only { display: block; }
+  .upload-sub.mobile-only { display: none; }
+  @media (hover: none) and (pointer: coarse) {
+    .upload-sub.desktop-only { display: none; }
+    .upload-sub.mobile-only { display: block; }
+  }
+  .preview-img {
+    width: 100%; max-height: 220px; object-fit: contain;
+    border-radius: 8px; margin-top: 10px; display: none;
+    border: 1px solid var(--border); background: var(--surface2);
+  }
+  .preview-wrap { position: relative; display: none; }
+  .preview-wrap.show { display: block; }
+  .remove-img-btn {
+    position: absolute; top: 6px; right: 6px;
+    background: rgba(0,0,0,0.7); color: #fff;
+    border: none; border-radius: 6px;
+    width: 26px; height: 26px; font-size: 14px;
+    cursor: pointer; z-index: 20;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .remove-img-btn:hover { background: rgba(239,68,68,0.85); }
+  .filename-tag {
+    font-size: 11px; color: var(--muted); margin-top: 6px;
+    font-family: var(--mono); word-break: break-all;
+  }
+
+  /* ── EXPORT PANEL ── */
+  .export-panel {
+    background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.05));
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: var(--radius); padding: 16px; margin-top: 16px;
+  }
+  .export-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: 12px; }
+
+  /* ── NOTICE ── */
+  .notice {
+    background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px; padding: 10px 12px; font-size: 12px;
+    color: var(--orange); margin-bottom: 12px; display: flex; gap: 8px;
+  }
+  .info-notice {
+    background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 8px; padding: 10px 12px; font-size: 12px;
+    color: #93c5fd; margin-bottom: 12px; line-height: 1.5;
+  }
+
+  /* ── HOOKS GRID ── */
+  .hooks-grid { display: grid; gap: 8px; }
+  .hook-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+  }
+  .hook-text { font-size: 12px; line-height: 1.6; flex: 1; }
+  .hook-label { font-size: 10px; color: var(--accent2); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+
+  /* ── COMPARE TABLE ── */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px) { .compare-grid { grid-template-columns: 1fr; } }
+  .compare-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+  }
+  .compare-title { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+  .compare-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; border-bottom: 1px solid var(--border); }
+  .compare-row:last-child { border-bottom: none; }
+
+  /* ── TRUST SCORE ── */
+  .trust-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: 700;
+  }
+  .trust-high { background: rgba(16,185,129,0.15); color: var(--green); }
+  .trust-med { background: rgba(245,158,11,0.15); color: var(--orange); }
+  .trust-low { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  /* ── SECTION NEXT BTN ── */
+  .next-section {
+    display: flex; justify-content: flex-end; margin-top: 16px;
+    border-top: 1px solid var(--border); padding-top: 14px;
+  }
+
+  /* ── COPY ROW ── */
+  .copy-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+  /* ── PULSE ── */
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+  .pulse { animation: pulse 2s infinite; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .hero-title { font-size: 22px; }
+    .main { padding: 14px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">Pilot<span>Drop</span></div>
+  <div class="header-right">
+    <div class="badge">₹0 STARTUP</div>
+    <div class="badge-pro">WORKFLOW PLATFORM</div>
+  </div>
+</div>
+
+<!-- WORKFLOW BAR -->
+<div class="workflow-bar">
+  <div class="workflow-steps">
+    <button class="wstep active" id="ws-home" onclick="showPage('home')">
+      <span class="wnum">🏠</span> Home
+    </button>
+    <span class="warrow">›</span>
+    <button class="wstep" id="ws-research" onclick="showPage('research')">
+      <span class="wnum">1</span> Research
+    </button>
+    <span class="warrow">›</span>
+    <button class="wstep" id="ws-supplier" onclick="showPage('supplier')">
+      <span class="wnum">2</span> Suppliers
+    </button>
+    <span class="warrow">›</span>
+    <button class="wstep" id="ws-calculator" onclick="showPage('calculator')">
+      <span class="wnum">3</span> Profit Calc
+    </button>
+    <span class="warrow">›</span>
+    <button class="wstep" id="ws-adcopy" onclick="showPage('adcopy')">
+      <span class="wnum">4</span> Ad Copy
+    </button>
+    <span class="warrow">›</span>
+    <button class="wstep" id="ws-description" onclick="showPage('description')">
+      <span class="wnum">5</span> Description
+    </button>
+    <span class="warrow">›</span>
+    <button class="wstep" id="ws-ugc" onclick="showPage('ugc')">
+      <span class="wnum">6</span> UGC Script
+    </button>
+    <span class="warrow">›</span>
+    <button class="wstep" id="ws-analyzer" onclick="showPage('analyzer')">
+      <span class="wnum">7</span> Image AI
+    </button>
+    <span class="warrow">›</span>
+    <button class="wstep" id="ws-export" onclick="showPage('export')">
+      <span class="wnum">8</span> Export
+    </button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ════════════════════════════════════════════════════
+     HOME
+════════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+  <div style="margin-bottom:20px;">
+    <div class="hero-title">One Platform.<br><span class="hl">Every Step</span> of Dropshipping.</div>
+    <div class="hero-sub">From product idea to launch-ready marketing assets — guided, From Product Idea to First Sale. One AI Workspace.</div>
+  </div>
+
+  <div class="workflow-home">
+    <div class="wf-title">⚡ Your Complete Workflow</div>
+    <div class="wf-steps">
+      <div class="wf-step" onclick="showPage('research')"><span class="n">1</span>Research</div>
+      <div class="wf-arr">→</div>
+      <div class="wf-step" onclick="showPage('supplier')"><span class="n">2</span>Suppliers</div>
+      <div class="wf-arr">→</div>
+      <div class="wf-step" onclick="showPage('calculator')"><span class="n">3</span>Profit</div>
+      <div class="wf-arr">→</div>
+      <div class="wf-step" onclick="showPage('adcopy')"><span class="n">4</span>Ad Copy</div>
+      <div class="wf-arr">→</div>
+      <div class="wf-step" onclick="showPage('description')"><span class="n">5</span>Description</div>
+      <div class="wf-arr">→</div>
+      <div class="wf-step" onclick="showPage('ugc')"><span class="n">6</span>UGC Script</div>
+      <div class="wf-arr">→</div>
+      <div class="wf-step" onclick="showPage('analyzer')"><span class="n">7</span>Image AI</div>
+      <div class="wf-arr">→</div>
+      <div class="wf-step" onclick="showPage('export')"><span class="n">8</span>Export</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="val" style="color:var(--green)">₹0</div><div class="lbl">Startup Cost</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--accent2)">8</div><div class="lbl">AI Tools</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--orange)">∞</div><div class="lbl">Products</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--cyan)">1</div><div class="lbl">Platform</div></div>
+  </div>
+
+  <div class="features">
+    <div class="feature-card" onclick="showPage('research')">
+      <div class="feature-icon">🔍</div>
+      <div class="feature-name">Product Research</div>
+      <div class="feature-desc">Demand, competition & viral scores. Trend analysis with target audience.</div>
+    </div>
+    <div class="feature-card" onclick="showPage('supplier')">
+      <div class="feature-icon">🏭</div>
+      <div class="feature-name">Supplier Finder</div>
+      <div class="feature-desc">IndiaMART, Meesho, Alibaba — with trust scores and contact templates.</div>
+    </div>
+    <div class="feature-card" onclick="showPage('calculator')">
+      <div class="feature-icon">💰</div>
+      <div class="feature-name">Profit Calculator</div>
+      <div class="feature-desc">Full cost breakdown: shipping, gateway, ads, ROI & break-even.</div>
+    </div>
+    <div class="feature-card" onclick="showPage('adcopy')">
+      <div class="feature-icon">✍️</div>
+      <div class="feature-name">Ad Copy Generator</div>
+      <div class="feature-desc">Multiple hooks for Instagram, Facebook, TikTok, YouTube & more.</div>
+    </div>
+    <div class="feature-card" onclick="showPage('description')">
+      <div class="feature-icon">📝</div>
+      <div class="feature-name">Product Description</div>
+      <div class="feature-desc">SEO-ready Shopify descriptions with selling points & FAQs.</div>
+    </div>
+    <div class="feature-card" onclick="showPage('ugc')">
+      <div class="feature-icon">🎬</div>
+      <div class="feature-name">UGC Video Script</div>
+      <div class="feature-desc">Ready-to-film scripts for Reels, TikTok, and YouTube Shorts.</div>
+    </div>
+    <div class="feature-card" onclick="showPage('analyzer')">
+      <div class="feature-icon">🖼️</div>
+      <div class="feature-name">AI Image Analyzer</div>
+      <div class="feature-desc">Upload product photo → AI identifies it and generates everything.</div>
+    </div>
+    <div class="feature-card" onclick="showPage('export')">
+      <div class="feature-icon">📦</div>
+      <div class="feature-name">Export Everything</div>
+      <div class="feature-desc">PDF report, Shopify CSV, one-click copy all content.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🇮🇳 Best Free Platforms</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <span class="platform-tag" style="font-size:12px;padding:5px 10px;">Meesho</span>
+      <span class="platform-tag" style="font-size:12px;padding:5px 10px;">GlowRoad</span>
+      <span class="platform-tag" style="font-size:12px;padding:5px 10px;">IndiaMART</span>
+      <span class="platform-tag" style="font-size:12px;padding:5px 10px;">Instagram Shop</span>
+      <span class="platform-tag" style="font-size:12px;padding:5px 10px;">WhatsApp Business</span>
+      <span class="platform-tag" style="font-size:12px;padding:5px 10px;">Alibaba</span>
+      <span class="platform-tag" style="font-size:12px;padding:5px 10px;">Shopify</span>
+    </div>
+  </div>
+
+  <div class="info-notice">
+    💡 <strong>Pro tip:</strong> Start with Step 1 (Product Research) and follow the workflow bar at the top. By Step 8, you'll have a complete product launch kit ready.
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     STEP 1: PRODUCT RESEARCH
+════════════════════════════════════════════════════ -->
+<div class="page" id="page-research">
+  <div class="section-title">🔍 Product Research</div>
+  <div class="section-sub">AI finds winning products with demand scores, competition analysis, and trend insights</div>
+
+  <div class="card">
+    <div class="card-title">Select Niche</div>
+    <div class="tag-row" id="niche-tags">
+      <div class="niche-tag selected" onclick="selectNiche(this)">Fashion & Clothing</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Electronics</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Home & Kitchen</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Beauty & Skincare</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Fitness & Gym</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Pet Products</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Kids & Toys</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Stationery & Art</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Phone Accessories</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Travel & Bags</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Jewellery</div>
+      <div class="niche-tag" onclick="selectNiche(this)">Health & Wellness</div>
+    </div>
+    <div class="input-row">
+      <input class="inp" id="research-niche-custom" placeholder="Or type your own niche..." />
+      <select class="inp" id="research-market" style="min-width:130px;">
+        <option value="India">🇮🇳 India</option>
+        <option value="Global">🌍 Global</option>
+        <option value="Southeast Asia">Southeast Asia</option>
+        <option value="UAE / Middle East">UAE / Middle East</option>
+      </select>
+    </div>
+    <button class="btn" onclick="findProducts()">Find Winning Products →</button>
+  </div>
+
+  <!-- Score Cards -->
+  <div id="research-scores" style="display:none;">
+    <div class="score-grid">
+      <div class="score-card">
+        <div class="score-top">
+          <div class="score-name">📈 Demand Score</div>
+          <div class="score-num" id="sc-demand" style="color:var(--green)">—</div>
+        </div>
+        <div class="score-bar"><div class="score-fill" id="sf-demand" style="width:0%;background:var(--green)"></div></div>
+      </div>
+      <div class="score-card">
+        <div class="score-top">
+          <div class="score-name">⚔️ Competition Score</div>
+          <div class="score-num" id="sc-competition" style="color:var(--orange)">—</div>
+        </div>
+        <div class="score-bar"><div class="score-fill" id="sf-competition" style="width:0%;background:var(--orange)"></div></div>
+      </div>
+      <div class="score-card">
+        <div class="score-top">
+          <div class="score-name">💰 Profit Score</div>
+          <div class="score-num" id="sc-profit" style="color:var(--accent2)">—</div>
+        </div>
+        <div class="score-bar"><div class="score-fill" id="sf-profit" style="width:0%;background:var(--accent2)"></div></div>
+      </div>
+      <div class="score-card">
+        <div class="score-top">
+          <div class="score-name">🔥 Viral Potential</div>
+          <div class="score-num" id="sc-viral" style="color:var(--red)">—</div>
+        </div>
+        <div class="score-bar"><div class="score-fill" id="sf-viral" style="width:0%;background:var(--red)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" id="research-loading"><div class="spinner"></div> AI is researching products and scoring...</div>
+  <div class="result-box" id="research-result"></div>
+  <div class="copy-row" id="research-copy-row" style="display:none;">
+    <button class="btn outline sm" onclick="copyResult('research-result')">📋 Copy Research</button>
+    <button class="btn sm" onclick="showPage('supplier')">Next: Find Suppliers →</button>
+  </div>
+
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title">🌐 Google Trends — Quick Check</div>
+    <div class="info-notice">Open Google Trends directly for your product to see real search volume data. Choose your niche above then click to open.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <a class="platform-btn" id="trends-india-btn" href="#" target="_blank" onclick="openTrends('IN')">📊 Trends India</a>
+      <a class="platform-btn" id="trends-global-btn" href="#" target="_blank" onclick="openTrends('GLOBAL')">🌍 Trends Global</a>
+      <a class="platform-btn" href="https://trends.google.com/trends/trendingsearches/daily?geo=IN" target="_blank">🔥 Trending in India</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     STEP 2: SUPPLIER FINDER
+════════════════════════════════════════════════════ -->
+<div class="page" id="page-supplier">
+  <div class="section-title">🏭 Supplier Finder</div>
+  <div class="section-sub">Find verified Indian & global suppliers with trust scores and contact templates</div>
+
+  <div class="card">
+    <div class="card-title">Find Suppliers For</div>
+    <div class="input-row">
+      <input class="inp" id="supplier-product" placeholder="e.g. wireless earbuds, kurti, gym gloves..." />
+      <select class="inp" id="supplier-type" style="min-width:130px;">
+        <option value="Indian Suppliers">🇮🇳 Indian</option>
+        <option value="Chinese Suppliers on AliExpress">🇨🇳 AliExpress</option>
+        <option value="Both Indian and Chinese suppliers">⚖️ Compare Both</option>
+      </select>
+    </div>
+
+    <div class="card-title" style="margin-top:4px;">Contact Template Style</div>
+    <div class="chip-row">
+      <button class="chip active" id="ct-beginner" onclick="setContactType('beginner',this)">👋 Beginner</button>
+      <button class="chip" id="ct-professional" onclick="setContactType('professional',this)">💼 Professional</button>
+      <button class="chip" id="ct-brand" onclick="setContactType('brand',this)">👑 Brand Owner</button>
+    </div>
+
+    <button class="btn" onclick="findSuppliers()">Find Suppliers →</button>
+  </div>
+
+  <div class="loading" id="supplier-loading"><div class="spinner"></div> Searching suppliers & generating contact templates...</div>
+  <div class="result-box" id="supplier-result"></div>
+
+  <!-- One-click supplier buttons -->
+  <div class="card" id="supplier-links-card">
+    <div class="card-title">🔗 Open Supplier Platforms</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+      <a class="platform-btn" id="link-indiamart" href="https://www.indiamart.com" target="_blank">🏢 IndiaMART</a>
+      <a class="platform-btn" id="link-tradeindia" href="https://www.tradeindia.com" target="_blank">🏗️ TradeIndia</a>
+      <a class="platform-btn" id="link-meesho" href="https://supplier.meesho.com" target="_blank">🛍️ Meesho Supplier</a>
+      <a class="platform-btn" id="link-alibaba" href="https://www.alibaba.com" target="_blank">🌏 Alibaba</a>
+      <a class="platform-btn" id="link-aliexpress" href="https://www.aliexpress.com" target="_blank">📦 AliExpress</a>
+      <a class="platform-btn" id="link-glowroad" href="https://www.glowroad.com" target="_blank">✨ GlowRoad</a>
+    </div>
+    <div id="supplier-keyword-box" style="display:none;">
+      <div class="card-title">🔑 Search Keyword</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <div class="inp" id="supplier-keyword-text" style="font-family:var(--mono);font-size:12px;flex:1;padding:8px 12px;"></div>
+        <button class="btn outline sm" onclick="copyText('supplier-keyword-text')">📋 Copy</button>
+        <a class="btn sm blue" id="link-search-indiamart" href="#" target="_blank">Search IndiaMART</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🇮🇳 vs 🇨🇳 Quick Comparison</div>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-title">🇮🇳 Indian Suppliers</div>
+        <div class="compare-row"><span>Delivery</span><span style="color:var(--green)">3–7 days</span></div>
+        <div class="compare-row"><span>Min Order</span><span>1 unit possible</span></div>
+        <div class="compare-row"><span>GST Invoice</span><span style="color:var(--green)">✅ Available</span></div>
+        <div class="compare-row"><span>Returns</span><span style="color:var(--green)">Easier</span></div>
+        <div class="compare-row"><span>Language</span><span style="color:var(--green)">Hindi/English</span></div>
+        <div class="compare-row"><span>Cost</span><span style="color:var(--orange)">Slightly higher</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-title">🇨🇳 Chinese Suppliers</div>
+        <div class="compare-row"><span>Delivery</span><span style="color:var(--orange)">15–45 days</span></div>
+        <div class="compare-row"><span>Min Order</span><span>Usually 1+</span></div>
+        <div class="compare-row"><span>GST Invoice</span><span style="color:var(--red)">❌ No</span></div>
+        <div class="compare-row"><span>Returns</span><span style="color:var(--red)">Difficult</span></div>
+        <div class="compare-row"><span>Language</span><span style="color:var(--orange)">English only</span></div>
+        <div class="compare-row"><span>Cost</span><span style="color:var(--green)">20–40% cheaper</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="copy-row">
+    <button class="btn outline sm" onclick="copyResult('supplier-result')">📋 Copy Info</button>
+    <button class="btn sm" onclick="showPage('calculator')">Next: Profit Calc →</button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     STEP 3: PROFIT CALCULATOR
+════════════════════════════════════════════════════ -->
+<div class="page" id="page-calculator">
+  <div class="section-title">💰 Profit Calculator</div>
+  <div class="section-sub">Full cost breakdown with ROI, break-even, and payment gateway fees</div>
+
+  <div class="card">
+    <div class="card-title">📥 Cost Inputs</div>
+    <div class="calc-grid">
+      <div>
+        <div class="inp-label">Supplier Cost (₹)</div>
+        <input class="inp" id="calc-cost" type="number" placeholder="250" oninput="calcProfit()" />
+      </div>
+      <div>
+        <div class="inp-label">Selling Price (₹)</div>
+        <input class="inp" id="calc-sell" type="number" placeholder="699" oninput="calcProfit()" />
+      </div>
+      <div>
+        <div class="inp-label">Shipping Cost (₹)</div>
+        <input class="inp" id="calc-ship" type="number" placeholder="50" oninput="calcProfit()" />
+      </div>
+      <div>
+        <div class="inp-label">Payment Gateway Fee %</div>
+        <input class="inp" id="calc-gateway" type="number" placeholder="2" oninput="calcProfit()" />
+      </div>
+      <div>
+        <div class="inp-label">Platform Fee % (Meesho ~0%)</div>
+        <input class="inp" id="calc-fee" type="number" placeholder="0" oninput="calcProfit()" />
+      </div>
+      <div>
+        <div class="inp-label">Ad Spend per Sale (₹)</div>
+        <input class="inp" id="calc-ads" type="number" placeholder="30" oninput="calcProfit()" />
+      </div>
+      <div>
+        <div class="inp-label">Units per Month</div>
+        <input class="inp" id="calc-units" type="number" placeholder="30" oninput="calcProfit()" />
+      </div>
+      <div>
+        <div class="inp-label">Packaging Cost (₹)</div>
+        <input class="inp" id="calc-pack" type="number" placeholder="15" oninput="calcProfit()" />
+      </div>
+    </div>
+
+    <div class="calc-result" id="calc-result">
+      <div class="calc-mini-grid">
+        <div>
+          <div class="calc-lbl">Profit Per Sale</div>
+          <div class="calc-num" id="r-per-sale">—</div>
+        </div>
+        <div>
+          <div class="calc-lbl">Profit Margin</div>
+          <div class="calc-num" id="r-margin" style="color:var(--accent2)">—</div>
+        </div>
+        <div>
+          <div class="calc-lbl">Monthly Revenue</div>
+          <div class="calc-num" id="r-revenue" style="font-size:20px">—</div>
+        </div>
+        <div>
+          <div class="calc-lbl">Monthly Profit</div>
+          <div class="calc-num" id="r-profit" style="font-size:20px">—</div>
+        </div>
+        <div>
+          <div class="calc-lbl">ROI</div>
+          <div class="calc-num" id="r-roi" style="color:var(--cyan);font-size:20px">—</div>
+        </div>
+        <div>
+          <div class="calc-lbl">Break-even Units</div>
+          <div class="calc-num" id="r-breakeven" style="font-size:20px">—</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+        <div class="calc-lbl">Total Cost Per Unit</div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:12px;flex-wrap:wrap;gap:6px;">
+          <span>Product: <span id="bd-product" style="color:var(--text)">—</span></span>
+          <span>Shipping: <span id="bd-ship" style="color:var(--text)">—</span></span>
+          <span>Gateway: <span id="bd-gateway" style="color:var(--text)">—</span></span>
+          <span>Platform: <span id="bd-platform" style="color:var(--text)">—</span></span>
+          <span>Ads: <span id="bd-ads" style="color:var(--text)">—</span></span>
+          <span>Packaging: <span id="bd-pack" style="color:var(--text)">—</span></span>
+          <span style="font-weight:700;">Total: <span id="bd-total" style="color:var(--orange)">—</span></span>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="calc-lbl">Monthly Progress to ₹50,000 Goal</div>
+          <div class="breakeven-bar" style="margin-top:6px;">
+            <div class="breakeven-fill" id="goal-fill" style="width:0%"></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="goal-text">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💡 Platform Gateway Fees (India)</div>
+    <table class="data-table">
+      <tr><th>Platform</th><th>Gateway Fee</th><th>Platform Fee</th></tr>
+      <tr><td>Meesho</td><td>—</td><td><span style="color:var(--green)">0%</span></td></tr>
+      <tr><td>Shopify + Razorpay</td><td>2%</td><td>0.5–1%</td></tr>
+      <tr><td>Instagram/WhatsApp</td><td>2% (Razorpay)</td><td>0%</td></tr>
+      <tr><td>Amazon India</td><td>1.5%</td><td>5–15%</td></tr>
+      <tr><td>Flipkart</td><td>1.5%</td><td>5–12%</td></tr>
+    </table>
+  </div>
+
+  <div class="copy-row">
+    <button class="btn sm" onclick="showPage('adcopy')">Next: Ad Copy →</button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     STEP 4: AD COPY
+════════════════════════════════════════════════════ -->
+<div class="page" id="page-adcopy">
+  <div class="section-title">✍️ Ad Copy Generator</div>
+  <div class="section-sub">Platform-specific ads with multiple hooks, tone control, and emoji settings</div>
+
+  <div class="card">
+    <div class="card-title">Product Details</div>
+    <div class="input-row">
+      <input class="inp" id="ad-product" placeholder="Product name (e.g. Wireless Earbuds)" />
+      <input class="inp" id="ad-price" placeholder="Selling price (₹)" />
+    </div>
+    <div class="input-row">
+      <textarea class="inp" id="ad-features" placeholder="Key features or benefits (e.g. 30hr battery, noise cancelling, IPX5 waterproof...)" rows="2"></textarea>
+    </div>
+
+    <div class="card-title">📱 Platform</div>
+    <div class="chip-row" id="platform-chips">
+      <button class="chip active" onclick="setPlatform(this,'Instagram Reels & Feed')">📸 Instagram</button>
+      <button class="chip" onclick="setPlatform(this,'Facebook Ad')">👥 Facebook</button>
+      <button class="chip" onclick="setPlatform(this,'Google Ads')">🔍 Google Ads</button>
+      <button class="chip" onclick="setPlatform(this,'WhatsApp Message')">💬 WhatsApp</button>
+      <button class="chip" onclick="setPlatform(this,'TikTok')">🎵 TikTok</button>
+      <button class="chip" onclick="setPlatform(this,'YouTube Shorts')">▶️ YouTube Shorts</button>
+      <button class="chip" onclick="setPlatform(this,'All Platforms')">🌐 All Platforms</button>
+    </div>
+
+    <div class="card-title">🎭 Tone</div>
+    <div class="chip-row" id="tone-chips">
+      <button class="chip active" onclick="setTone(this,'Professional')">💼 Professional</button>
+      <button class="chip" onclick="setTone(this,'Luxury & Premium')">✨ Luxury</button>
+      <button class="chip" onclick="setTone(this,'Friendly & Casual')">😊 Friendly</button>
+      <button class="chip" onclick="setTone(this,'Emotional & Storytelling')">❤️ Emotional</button>
+      <button class="chip" onclick="setTone(this,'High Conversion / Direct Response')">🎯 High Convert</button>
+    </div>
+
+    <div class="card-title">😄 Emoji Level</div>
+    <div class="chip-row" id="emoji-chips">
+      <button class="chip" onclick="setEmoji(this,'None')">🚫 None</button>
+      <button class="chip active" onclick="setEmoji(this,'Low')">😐 Low</button>
+      <button class="chip" onclick="setEmoji(this,'Medium')">😊 Medium</button>
+      <button class="chip" onclick="setEmoji(this,'High')">🎉 High</button>
+    </div>
+
+    <div class="card-title">⚡ Urgency Mode</div>
+    <div class="chip-row">
+      <button class="chip active" id="urgency-off" onclick="setUrgency(this,false)">🔕 No Fake Urgency</button>
+      <button class="chip" id="urgency-on" onclick="setUrgency(this,true)">🔔 Enable Urgency</button>
+    </div>
+
+    <button class="btn" onclick="generateAdCopy()" style="margin-top:4px;">Generate Ad Copy & Hooks →</button>
+  </div>
+
+  <div class="loading" id="ad-loading"><div class="spinner"></div> Writing your ads and generating hooks...</div>
+  <div class="result-box" id="ad-result"></div>
+  <div class="copy-row" id="ad-copy-row" style="display:none;">
+    <button class="btn outline sm" onclick="copyResult('ad-result')">📋 Copy All</button>
+    <button class="btn sm" onclick="showPage('description')">Next: Description →</button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     STEP 5: PRODUCT DESCRIPTION
+════════════════════════════════════════════════════ -->
+<div class="page" id="page-description">
+  <div class="section-title">📝 Product Description</div>
+  <div class="section-sub">SEO-ready Shopify product descriptions with selling points, FAQs & landing page copy</div>
+
+  <div class="card">
+    <div class="card-title">Product Info</div>
+    <div class="input-row">
+      <input class="inp" id="desc-product" placeholder="Product name" />
+      <input class="inp" id="desc-price" placeholder="Price (₹)" />
+    </div>
+    <div class="input-row">
+      <textarea class="inp" id="desc-features" placeholder="Features, specs, benefits, materials, size..." rows="3"></textarea>
+    </div>
+
+    <div class="card-title">Output Style</div>
+    <div class="chip-row" id="desc-style-chips">
+      <button class="chip active" onclick="setDescStyle(this,'Shopify Product Page')">🛒 Shopify</button>
+      <button class="chip" onclick="setDescStyle(this,'Landing Page Copy')">🎯 Landing Page</button>
+      <button class="chip" onclick="setDescStyle(this,'Amazon Listing')">📦 Amazon</button>
+      <button class="chip" onclick="setDescStyle(this,'Instagram Bio / Shop Description')">📱 Instagram</button>
+    </div>
+
+    <button class="btn" onclick="generateDescription()">Generate Description →</button>
+  </div>
+
+  <div class="loading" id="desc-loading"><div class="spinner"></div> Writing your product description...</div>
+  <div class="result-box" id="desc-result"></div>
+  <div class="copy-row" id="desc-copy-row" style="display:none;">
+    <button class="btn outline sm" onclick="copyResult('desc-result')">📋 Copy Description</button>
+    <button class="btn sm" onclick="showPage('ugc')">Next: UGC Script →</button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     STEP 6: UGC SCRIPT
+════════════════════════════════════════════════════ -->
+<div class="page" id="page-ugc">
+  <div class="section-title">🎬 UGC Video Script</div>
+  <div class="section-sub">Ready-to-film scripts for Instagram Reels, TikTok & YouTube Shorts</div>
+
+  <div class="card">
+    <div class="card-title">Product & Creator Details</div>
+    <div class="input-row">
+      <input class="inp" id="ugc-product" placeholder="Product name" />
+      <select class="inp" id="ugc-platform" style="min-width:140px;">
+        <option>Instagram Reels</option>
+        <option>TikTok</option>
+        <option>YouTube Shorts</option>
+        <option>All Short Formats</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <textarea class="inp" id="ugc-features" placeholder="Key product features and pain points it solves..." rows="2"></textarea>
+    </div>
+
+    <div class="card-title">Video Style</div>
+    <div class="chip-row" id="ugc-style-chips">
+      <button class="chip active" onclick="setUGCStyle(this,'Unboxing & First Impression')">📦 Unboxing</button>
+      <button class="chip" onclick="setUGCStyle(this,'Before & After Transformation')">✨ Before/After</button>
+      <button class="chip" onclick="setUGCStyle(this,'Problem & Solution')">💡 Problem/Solution</button>
+      <button class="chip" onclick="setUGCStyle(this,'Day in My Life featuring the product')">📅 DITL</button>
+      <button class="chip" onclick="setUGCStyle(this,'Honest Review')">⭐ Review</button>
+    </div>
+
+    <button class="btn" onclick="generateUGC()">Generate Script →</button>
+  </div>
+
+  <div class="loading" id="ugc-loading"><div class="spinner"></div> Writing your video script...</div>
+  <div class="result-box" id="ugc-result"></div>
+  <div class="copy-row" id="ugc-copy-row" style="display:none;">
+    <button class="btn outline sm" onclick="copyResult('ugc-result')">📋 Copy Script</button>
+    <button class="btn sm" onclick="showPage('analyzer')">Next: Image AI →</button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     STEP 7: IMAGE ANALYZER
+════════════════════════════════════════════════════ -->
+<div class="page" id="page-analyzer">
+  <div class="section-title">🖼️ AI Image Analyzer</div>
+  <div class="section-sub">Upload a product photo and AI automatically identifies it and generates everything</div>
+
+  <div class="card">
+    <div class="card-title">Upload Product Image</div>
+    <div class="upload-zone" id="upload-zone" onclick="if(!this.classList.contains('has-image')) document.getElementById('img-file-input').click();">
+      <div id="upload-placeholder">
+        <div class="upload-icon">📸</div>
+        <div class="upload-text">Add a product photo</div>
+        <div class="upload-sub desktop-only">Drag a photo here, or use the button below</div>
+        <div class="upload-sub mobile-only">Use the button below to pick from your gallery</div>
+        <div class="upload-sub" style="margin-top:4px;">JPG, PNG, WebP — AI will identify and analyze the product</div>
+        <button type="button" class="btn" id="choose-img-btn" style="margin-top:14px;" onclick="event.stopPropagation(); document.getElementById('img-file-input').click();">📁 Choose Image</button>
+      </div>
+      <div class="preview-wrap" id="preview-wrap">
+        <button class="remove-img-btn" onclick="removeImage(event)" title="Remove image">✕</button>
+        <img class="preview-img" id="preview-img" style="display:block;" />
+        <div class="filename-tag" id="filename-tag"></div>
+        <button type="button" class="btn" style="margin-top:10px;" onclick="event.stopPropagation(); document.getElementById('img-file-input').click();">🔄 Change Image</button>
+      </div>
+    </div>
+    <input type="file" id="img-file-input" accept="image/*" onchange="handleImageUpload(this)" style="display:none;" />
+
+    <div style="margin-top:12px;">
+      <div class="card-title">What to Generate</div>
+      <div class="chip-row" id="analyzer-output-chips">
+        <button class="chip active" onclick="toggleChip(this,'Product Identification & Features')">🔍 Identification</button>
+        <button class="chip active" onclick="toggleChip(this,'Selling Points')">💎 Selling Points</button>
+        <button class="chip active" onclick="toggleChip(this,'Customer Pain Points')">🎯 Pain Points</button>
+        <button class="chip active" onclick="toggleChip(this,'Target Audience')">👥 Target Audience</button>
+        <button class="chip active" onclick="toggleChip(this,'Ad Copy')">✍️ Ad Copy</button>
+        <button class="chip active" onclick="toggleChip(this,'UGC Video Ideas')">🎬 UGC Ideas</button>
+      </div>
+      <button class="btn" id="analyze-btn" disabled onclick="analyzeImage()">Analyze Product Image →</button>
+    </div>
+  </div>
+
+  <div class="loading" id="analyzer-loading"><div class="spinner"></div> AI is analyzing your product image...</div>
+  <div class="result-box" id="analyzer-result"></div>
+  <div class="copy-row" id="analyzer-copy-row" style="display:none;">
+    <button class="btn outline sm" onclick="copyResult('analyzer-result')">📋 Copy Analysis</button>
+    <button class="btn sm" onclick="showPage('export')">Next: Export →</button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     STEP 8: EXPORT
+════════════════════════════════════════════════════ -->
+<div class="page" id="page-export">
+  <div class="section-title">📦 Export Everything</div>
+  <div class="section-sub">Download all generated content as PDF, copy everything, or export Shopify-ready files</div>
+
+  <div class="export-panel">
+    <div class="export-title">✅ Content Status</div>
+    <div id="export-status-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">
+      <div id="exp-research" class="export-status-item">🔍 Product Research — <span style="color:var(--muted)">Not generated</span></div>
+      <div id="exp-supplier" class="export-status-item">🏭 Supplier Info — <span style="color:var(--muted)">Not generated</span></div>
+      <div id="exp-ad" class="export-status-item">✍️ Ad Copy — <span style="color:var(--muted)">Not generated</span></div>
+      <div id="exp-desc" class="export-status-item">📝 Description — <span style="color:var(--muted)">Not generated</span></div>
+      <div id="exp-ugc" class="export-status-item">🎬 UGC Script — <span style="color:var(--muted)">Not generated</span></div>
+      <div id="exp-analyzer" class="export-status-item">🖼️ Image Analysis — <span style="color:var(--muted)">Not generated</span></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title">🚀 Export Options</div>
+    <div class="btn-row">
+      <button class="btn green" onclick="copyAllContent()">📋 Copy All Content</button>
+      <button class="btn blue" onclick="downloadAsTxt()">📄 Download as TXT</button>
+      <button class="btn" onclick="generateShopifyCSV()">🛒 Shopify CSV Export</button>
+    </div>
+    <div id="export-output" style="margin-top:12px;display:none;">
+      <div class="result-box show" id="export-text-box" style="max-height:300px;"></div>
+      <div class="copy-row" style="margin-top:8px;">
+        <button class="btn outline sm" onclick="copyResult('export-text-box')">📋 Copy</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 Shopify Product CSV</div>
+    <div class="info-notice">Fill in product name and price to generate a Shopify-ready CSV file you can import directly into your store.</div>
+    <div class="input-row">
+      <input class="inp" id="shopify-name" placeholder="Product name for Shopify" />
+      <input class="inp" id="shopify-price" placeholder="Price (₹)" type="number" />
+    </div>
+    <div class="input-row">
+      <input class="inp" id="shopify-vendor" placeholder="Vendor / Brand name" />
+      <select class="inp" id="shopify-type">
+        <option>Fashion</option>
+        <option>Electronics</option>
+        <option>Home & Kitchen</option>
+        <option>Beauty</option>
+        <option>Sports</option>
+        <option>Toys</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <button class="btn" onclick="downloadShopifyCSV()">Download Shopify CSV →</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏁 Quick Start Links</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <a class="platform-btn" href="https://www.shopify.com/free-trial" target="_blank">🛒 Start Shopify Store</a>
+      <a class="platform-btn" href="https://supplier.meesho.com" target="_blank">🛍️ Meesho Supplier</a>
+      <a class="platform-btn" href="https://business.facebook.com/adsmanager" target="_blank">📢 Facebook Ads</a>
+      <a class="platform-btn" href="https://www.instagram.com/accounts/login/" target="_blank">📸 Instagram Shop</a>
+      <a class="platform-btn" href="https://razorpay.com" target="_blank">💳 Setup Razorpay</a>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let selectedNiche = 'Fashion & Clothing';
+let selectedPlatform = 'Instagram Reels & Feed';
+let selectedTone = 'Professional';
+let selectedEmoji = 'Low';
+let urgencyEnabled = false;
+let contactType = 'beginner';
+let descStyle = 'Shopify Product Page';
+let ugcStyle = 'Unboxing & First Impression';
+let imageBase64 = null;
+let generatedContent = {
+  research: '', supplier: '', adcopy: '', description: '', ugc: '', analyzer: ''
+};
+
+// ══════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.wstep').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const ws = document.getElementById('ws-' + id);
+  if (ws) ws.classList.add('active');
+  updateExportStatus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════════════
+//  SELECTION HELPERS
+// ══════════════════════════════════════════════════════
+function selectNiche(el) {
+  document.querySelectorAll('.niche-tag').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedNiche = el.textContent;
+  document.getElementById('research-niche-custom').value = '';
+}
+
+function setChipGroup(groupEl, val) {
+  groupEl.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  val.classList.add('active');
+}
+function setPlatform(el, val) {
+  setChipGroup(document.getElementById('platform-chips'), el);
+  selectedPlatform = val;
+}
+function setTone(el, val) {
+  setChipGroup(document.getElementById('tone-chips'), el);
+  selectedTone = val;
+}
+function setEmoji(el, val) {
+  setChipGroup(document.getElementById('emoji-chips'), el);
+  selectedEmoji = val;
+}
+function setUrgency(el, val) {
+  urgencyEnabled = val;
+  document.getElementById('urgency-off').classList.toggle('active', !val);
+  document.getElementById('urgency-on').classList.toggle('active', val);
+}
+function setContactType(val, el) {
+  contactType = val;
+  ['ct-beginner','ct-professional','ct-brand'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  el.classList.add('active');
+}
+function setDescStyle(el, val) {
+  setChipGroup(document.getElementById('desc-style-chips'), el);
+  descStyle = val;
+}
+function setUGCStyle(el, val) {
+  setChipGroup(document.getElementById('ugc-style-chips'), el);
+  ugcStyle = val;
+}
+function toggleChip(el) {
+  el.classList.toggle('active');
+}
+
+// ══════════════════════════════════════════════════════
+//  GROQ API (works when hosted on Netlify/GitHub Pages —
+//  no Anthropic key needed, uses your own free Groq key)
+// ══════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════
+//  ACCESS / PAYWALL SYSTEM
+// ══════════════════════════════════════════════════════
+const FREE_LIMIT_PER_DAY = 12;
+const UNLOCK_PRICE = '₹100';
+const UPI_ID = '8882604726@fam'; // <-- put your real UPI ID here
+const USDT_ADDRESS = 'PASTE_YOUR_TRC20_ADDRESS_HERE'; // <-- Binance USDT (TRC20) address
+const VALID_UNLOCK_CODES = ['PILOT100','DROPPILOT','PILOT','DROPPI','DROPPER']; // <-- add one code per buyer, or reuse one code for everyone
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function isUnlocked() {
+  return localStorage.getItem('pd_unlocked') === 'true';
+}
+
+function getUsageCount() {
+  const stored = JSON.parse(localStorage.getItem('pd_usage') || '{}');
+  if (stored.date !== todayKey()) return 0;
+  return stored.count || 0;
+}
+
+function incrementUsage() {
+  const count = getUsageCount() + 1;
+  localStorage.setItem('pd_usage', JSON.stringify({ date: todayKey(), count }));
+}
+
+function checkAccess() {
+  if (isUnlocked()) return true;
+  if (getUsageCount() < FREE_LIMIT_PER_DAY) return true;
+  showPaywall();
+  return false;
+}
+
+function showPaywall() {
+  document.getElementById('pw-limit').textContent = FREE_LIMIT_PER_DAY;
+  document.getElementById('pw-price').textContent = UNLOCK_PRICE;
+  document.getElementById('pw-upi').textContent = UPI_ID;
+  document.getElementById('pw-usdt').textContent = USDT_ADDRESS;
+  document.getElementById('paywall-overlay').style.display = 'flex';
+}
+
+function showPayMethod(method) {
+  document.getElementById('pay-upi').style.display = method === 'upi' ? 'block' : 'none';
+  document.getElementById('pay-usdt').style.display = method === 'usdt' ? 'block' : 'none';
+  document.getElementById('tab-upi').style.cssText = method === 'upi'
+    ? 'flex:1; padding:10px; font-size:13px; background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; border:none; border-radius:8px;'
+    : 'flex:1; padding:10px; font-size:13px; background:#1e1e2e; color:#94a3b8; border:1px solid rgba(255,255,255,0.15); border-radius:8px;';
+  document.getElementById('tab-usdt').style.cssText = method === 'usdt'
+    ? 'flex:1; padding:10px; font-size:13px; background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; border:none; border-radius:8px;'
+    : 'flex:1; padding:10px; font-size:13px; background:#1e1e2e; color:#94a3b8; border:1px solid rgba(255,255,255,0.15); border-radius:8px;';
+}
+
+function copyUSDT() {
+  navigator.clipboard.writeText(USDT_ADDRESS);
+  alert('Address copied!');
+}
+
+function closePaywall() {
+  document.getElementById('paywall-overlay').style.display = 'none';
+}
+
+function tryUnlockCode() {
+  const input = document.getElementById('unlock-code-input');
+  const msg = document.getElementById('unlock-msg');
+  const code = input.value.trim().toUpperCase();
+  if (VALID_UNLOCK_CODES.includes(code)) {
+    localStorage.setItem('pd_unlocked', 'true');
+    msg.textContent = '✅ Unlocked! Enjoy unlimited access.';
+    msg.style.color = '#22c55e';
+    setTimeout(closePaywall, 1200);
+  } else {
+    msg.textContent = '❌ Invalid code. Check spelling or contact us.';
+    msg.style.color = '#ef4444';
+  }
+}
+
+async function callClaude(prompt, imageData) {
+  if (!checkAccess()) throw new Error('Free limit reached — unlock to continue.');
+
+  // text-only tools (research, supplier, ad copy, description, ugc)
+  if (!imageData) {
+    const response = await fetch('/api/groq-proxy', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({messages:[{role:'user',content:prompt}], model:'llama-3.3-70b-versatile', max_tokens:1500})
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    incrementUsage();
+    return data.choices[0].message.content;
+  }
+
+  // image analyzer — needs a vision-capable model
+  const response = await fetch('/api/groq-proxy', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + imageData } }
+        ]
+      }],
+      max_tokens: 1500
+    })
+  });
+  const data = await response.json();
+  if (data.error) throw new Error(data.error.message);
+  incrementUsage();
+  return data.choices[0].message.content;
+}
+
+function setLoading(id, show) {
+  document.getElementById(id).classList.toggle('show', show);
+}
+function setResult(id, text) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.classList.add('show');
+}
+
+// ══════════════════════════════════════════════════════
+//  PRODUCT RESEARCH
+// ══════════════════════════════════════════════════════
+async function findProducts() {
+  const custom = document.getElementById('research-niche-custom').value.trim();
+  const niche = custom || selectedNiche;
+  const market = document.getElementById('research-market').value;
+
+  setLoading('research-loading', true);
+  document.getElementById('research-result').classList.remove('show');
+  document.getElementById('research-scores').style.display = 'none';
+  document.getElementById('research-copy-row').style.display = 'none';
+
+  try {
+    const result = await callClaude(`You are a dropshipping expert specializing in ${market} markets.
+
+Find 5 WINNING dropshipping products for niche: "${niche}" targeting ${market}.
+
+IMPORTANT: Start your response with exactly these 4 lines (replace numbers with your estimates 0-10):
+DEMAND_SCORE: [number]
+COMPETITION_SCORE: [number]
+PROFIT_SCORE: [number]
+VIRAL_SCORE: [number]
+
+Then for each of 5 products:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRODUCT: [Name]
+WHY IT WINS: [2 sentences on demand/trend/social proof]
+AMAZON PRICE: ₹[estimate]  |  FLIPKART: ₹[estimate]  |  SUPPLIER COST: ₹[estimate]
+SELL PRICE: ₹[recommended]  |  MARGIN: [%] (~₹[amount] per sale)
+SOURCE FROM: [Platform names]
+TARGET CUSTOMER: [Demographics and psychographics]
+WHY TRENDING: [Specific reasons — social media, seasonal, problem-solving]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Be specific with real ₹ estimates. Focus on products genuinely selling well in ${market} with low competition and high viral potential.`);
+
+    // Parse scores from response
+    const demandMatch = result.match(/DEMAND_SCORE:\s*(\d+)/);
+    const compMatch = result.match(/COMPETITION_SCORE:\s*(\d+)/);
+    const profitMatch = result.match(/PROFIT_SCORE:\s*(\d+)/);
+    const viralMatch = result.match(/VIRAL_SCORE:\s*(\d+)/);
+
+    if (demandMatch) {
+      document.getElementById('research-scores').style.display = 'block';
+      setScore('demand', parseInt(demandMatch[1]));
+      setScore('competition', parseInt(compMatch?.[1] || 5));
+      setScore('profit', parseInt(profitMatch?.[1] || 5));
+      setScore('viral', parseInt(viralMatch?.[1] || 5));
+    }
+
+    // Remove score lines from display
+    const cleanResult = result.replace(/DEMAND_SCORE:.*\n?/,'').replace(/COMPETITION_SCORE:.*\n?/,'').replace(/PROFIT_SCORE:.*\n?/,'').replace(/VIRAL_SCORE:.*\n?/,'').trim();
+    setResult('research-result', cleanResult);
+    generatedContent.research = cleanResult;
+    document.getElementById('research-copy-row').style.display = 'flex';
+
+    // Update supplier search keyword
+    const kw = document.getElementById('supplier-keyword-text');
+    if (kw) { kw.textContent = niche + ' wholesale India'; }
+  } catch (e) {
+    setResult('research-result', '❌ Error: ' + e.message);
+  }
+  setLoading('research-loading', false);
+}
+
+function setScore(key, val) {
+  const clamp = Math.max(0, Math.min(10, val));
+  document.getElementById('sc-' + key).textContent = clamp + '/10';
+  document.getElementById('sf-' + key).style.width = (clamp * 10) + '%';
+}
+
+function openTrends(geo) {
+  const custom = document.getElementById('research-niche-custom').value.trim();
+  const niche = encodeURIComponent(custom || selectedNiche);
+  const geoParam = geo === 'GLOBAL' ? '' : '&geo=' + geo;
+  window.open('https://trends.google.com/trends/explore?q=' + niche + geoParam, '_blank');
+  return false;
+}
+
+// ══════════════════════════════════════════════════════
+//  SUPPLIERS
+// ══════════════════════════════════════════════════════
+async function findSuppliers() {
+  const product = document.getElementById('supplier-product').value.trim();
+  const type = document.getElementById('supplier-type').value;
+  if (!product) { alert('Enter a product name'); return; }
+
+  setLoading('supplier-loading', true);
+  document.getElementById('supplier-result').classList.remove('show');
+
+  // Update platform links with search
+  const encoded = encodeURIComponent(product);
+  document.getElementById('link-indiamart').href = 'https://www.indiamart.com/proddetail/?q=' + encoded;
+  document.getElementById('link-alibaba').href = 'https://www.alibaba.com/trade/search?SearchText=' + encoded;
+  document.getElementById('link-aliexpress').href = 'https://www.aliexpress.com/wholesale?SearchText=' + encoded;
+  document.getElementById('link-search-indiamart').href = 'https://www.indiamart.com/proddetail/?q=' + encoded;
+  const kwBox = document.getElementById('supplier-keyword-box');
+  kwBox.style.display = 'block';
+  document.getElementById('supplier-keyword-text').textContent = product + ' wholesale supplier India';
+
+  const contactTemplateStyle = { beginner: 'Beginner (friendly, honest that I am new)', professional: 'Professional (experienced buyer)', brand: 'Brand Owner (building a premium brand, want exclusivity)' }[contactType];
+
+  try {
+    const result = await callClaude(`You are a dropshipping sourcing expert for Indian sellers.
+
+Find the BEST suppliers for: "${product}"
+Supplier preference: ${type}
+Contact template style: ${contactTemplateStyle}
+
+Provide:
+
+📦 TOP 3 SOURCING OPTIONS
+For each: Platform | Search keyword | Expected cost ₹ | MOQ | Reliability | Trust Score (1-10) | GST Available? | Typical shipping location
+
+⭐ TRUST SCORES & RED FLAGS
+Rate top suppliers 1-10 with specific reasons. Include red flags to watch for.
+
+📬 SUPPLIER CONTACT TEMPLATE (${contactTemplateStyle})
+Write a ready-to-send message they can copy-paste to the supplier.
+
+💡 NEGOTIATION TIP
+One specific tip to get better pricing on this product.
+
+📊 ESTIMATED COST COMPARISON (if applicable)
+Indian supplier vs Chinese: cost difference %, delivery days difference, which is better for beginners.
+
+Be specific with ₹ amounts and platform names.`);
+
+    setResult('supplier-result', result);
+    generatedContent.supplier = result;
+  } catch (e) {
+    setResult('supplier-result', '❌ Error: ' + e.message);
+  }
+  setLoading('supplier-loading', false);
+}
+
+// ══════════════════════════════════════════════════════
+//  PROFIT CALCULATOR
+// ══════════════════════════════════════════════════════
+function calcProfit() {
+  const cost = parseFloat(document.getElementById('calc-cost').value) || 0;
+  const sell = parseFloat(document.getElementById('calc-sell').value) || 0;
+  const ship = parseFloat(document.getElementById('calc-ship').value) || 0;
+  const gateway = parseFloat(document.getElementById('calc-gateway').value) || 0;
+  const fee = parseFloat(document.getElementById('calc-fee').value) || 0;
+  const ads = parseFloat(document.getElementById('calc-ads').value) || 0;
+  const units = parseFloat(document.getElementById('calc-units').value) || 1;
+  const pack = parseFloat(document.getElementById('calc-pack').value) || 0;
+
+  if (!sell) { document.getElementById('calc-result').classList.remove('show'); return; }
+
+  const gatewayFee = sell * (gateway / 100);
+  const platformFee = sell * (fee / 100);
+  const totalCost = cost + ship + gatewayFee + platformFee + ads + pack;
+  const profitPerSale = sell - totalCost;
+  const margin = sell > 0 ? ((profitPerSale / sell) * 100).toFixed(1) : 0;
+  const roi = cost > 0 ? ((profitPerSale / totalCost) * 100).toFixed(1) : 0;
+  const breakeven = profitPerSale > 0 ? Math.ceil(totalCost / profitPerSale) : '∞';
+  const revenue = sell * units;
+  const profit = profitPerSale * units;
+  const goalPercent = Math.min(100, Math.round((profit / 50000) * 100));
+
+  const fmt = n => '₹' + Math.abs(n).toFixed(0);
+  document.getElementById('r-per-sale').textContent = fmt(profitPerSale);
+  document.getElementById('r-per-sale').style.color = profitPerSale >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('r-margin').textContent = margin + '%';
+  document.getElementById('r-margin').style.color = parseFloat(margin) >= 20 ? 'var(--green)' : parseFloat(margin) >= 10 ? 'var(--orange)' : 'var(--red)';
+  document.getElementById('r-revenue').textContent = fmt(revenue);
+  document.getElementById('r-profit').textContent = fmt(profit);
+  document.getElementById('r-profit').style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('r-roi').textContent = roi + '%';
+  document.getElementById('r-breakeven').textContent = breakeven === '∞' ? '∞' : breakeven + ' units';
+  document.getElementById('bd-product').textContent = fmt(cost);
+  document.getElementById('bd-ship').textContent = fmt(ship);
+  document.getElementById('bd-gateway').textContent = fmt(gatewayFee);
+  document.getElementById('bd-platform').textContent = fmt(platformFee);
+  document.getElementById('bd-ads').textContent = fmt(ads);
+  document.getElementById('bd-pack').textContent = fmt(pack);
+  document.getElementById('bd-total').textContent = fmt(totalCost);
+  document.getElementById('goal-fill').style.width = goalPercent + '%';
+  document.getElementById('goal-text').textContent = `Monthly profit ₹${fmt(profit).replace('₹','')} = ${goalPercent}% toward ₹50,000 goal`;
+  document.getElementById('calc-result').classList.add('show');
+}
+
+// ══════════════════════════════════════════════════════
+//  AD COPY
+// ══════════════════════════════════════════════════════
+async function generateAdCopy() {
+  const product = document.getElementById('ad-product').value.trim();
+  const price = document.getElementById('ad-price').value.trim();
+  const features = document.getElementById('ad-features').value.trim();
+  if (!product) { alert('Enter a product name'); return; }
+
+  setLoading('ad-loading', true);
+  document.getElementById('ad-result').classList.remove('show');
+  document.getElementById('ad-copy-row').style.display = 'none';
+
+  const urgencyNote = urgencyEnabled ? 'Include urgency triggers like limited stock, time-sensitive deals.' : 'DO NOT use fake urgency like "Only today" or "Limited time". Focus on genuine value.';
+
+  try {
+    const result = await callClaude(`You are an expert Indian dropshipping copywriter who writes ads that convert.
+
+Product: ${product}
+Price: ₹${price || 'unspecified'}
+Features: ${features || 'standard product features'}
+Platform: ${selectedPlatform}
+Tone: ${selectedTone}
+Emoji Usage: ${selectedEmoji}
+${urgencyNote}
+
+Structure your response like this:
+
+🪝 3 SCROLL-STOPPING HOOKS
+Write 3 different opening hook options (first 1-2 lines). Label them Hook A, B, C.
+
+📣 FULL AD COPY
+Write the complete ad copy for ${selectedPlatform}. Use ${selectedEmoji} emojis. Tone: ${selectedTone}. ${urgencyEnabled ? 'Include urgency.' : 'No fake urgency.'}
+
+📲 PLATFORM TIPS
+2-3 quick tips specific to ${selectedPlatform} for this ad.
+
+Use Hinglish naturally where it feels right for Indian buyers. Make it ready to copy-paste.`);
+
+    setResult('ad-result', result);
+    generatedContent.adcopy = result;
+    document.getElementById('ad-copy-row').style.display = 'flex';
+  } catch (e) {
+    setResult('ad-result', '❌ Error: ' + e.message);
+  }
+  setLoading('ad-loading', false);
+}
+
+// ══════════════════════════════════════════════════════
+//  PRODUCT DESCRIPTION
+// ══════════════════════════════════════════════════════
+async function generateDescription() {
+  const product = document.getElementById('desc-product').value.trim();
+  const price = document.getElementById('desc-price').value.trim();
+  const features = document.getElementById('desc-features').value.trim();
+  if (!product) { alert('Enter a product name'); return; }
+
+  setLoading('desc-loading', true);
+  document.getElementById('desc-result').classList.remove('show');
+  document.getElementById('desc-copy-row').style.display = 'none';
+
+  try {
+    const result = await callClaude(`You are a professional ecommerce copywriter specializing in Indian dropshipping.
+
+Product: ${product}
+Price: ₹${price || 'unspecified'}
+Features: ${features || 'standard'}
+Output Format: ${descStyle}
+
+Write a complete ${descStyle} with:
+
+📝 PRODUCT TITLE (SEO optimized, 60-70 chars)
+
+🌟 SHORT DESCRIPTION (2-3 lines for above the fold, hook the buyer)
+
+📋 FULL DESCRIPTION
+Highlight pain points solved, key benefits, who it's for. Use short paragraphs, no bullet walls.
+
+✅ KEY FEATURES (5-7 bullet points, benefit-focused not just specs)
+
+🙋 FAQ SECTION (3 common questions buyers ask, with answers)
+
+🔍 SEO KEYWORDS (10 keywords to use in tags/meta)
+
+Make it feel premium, trustworthy, and conversion-focused for Indian buyers.`);
+
+    setResult('desc-result', result);
+    generatedContent.description = result;
+    document.getElementById('desc-copy-row').style.display = 'flex';
+  } catch (e) {
+    setResult('desc-result', '❌ Error: ' + e.message);
+  }
+  setLoading('desc-loading', false);
+}
+
+// ══════════════════════════════════════════════════════
+//  UGC SCRIPT
+// ══════════════════════════════════════════════════════
+async function generateUGC() {
+  const product = document.getElementById('ugc-product').value.trim();
+  const platform = document.getElementById('ugc-platform').value;
+  const features = document.getElementById('ugc-features').value.trim();
+  if (!product) { alert('Enter a product name'); return; }
+
+  setLoading('ugc-loading', true);
+  document.getElementById('ugc-result').classList.remove('show');
+  document.getElementById('ugc-copy-row').style.display = 'none';
+
+  try {
+    const result = await callClaude(`You are a UGC content creator and script writer for Indian social media.
+
+Product: ${product}
+Platform: ${platform}
+Features/Pain Points: ${features || 'general product'}
+Video Style: ${ugcStyle}
+
+Write a complete, ready-to-film UGC script:
+
+🎬 VIDEO OVERVIEW
+Duration: [X seconds] | Style: ${ugcStyle}
+
+📱 HOOK (First 3 seconds — crucial!)
+[Exactly what to say and do in the first 3 seconds]
+
+🎥 SCENE-BY-SCENE SCRIPT
+Format: [TIME] | [WHAT TO DO ON CAMERA] | [WHAT TO SAY / CAPTION]
+Write 5-8 scenes covering the full video.
+
+🗣️ VOICEOVER / CAPTION TEXT
+Full text to overlay or speak (Hinglish if natural)
+
+#️⃣ HASHTAGS (15 relevant hashtags for ${platform})
+
+💡 FILMING TIPS (3 quick tips for shooting this type of video at home)
+
+Make it feel authentic and relatable, not scripted or corporate.`);
+
+    setResult('ugc-result', result);
+    generatedContent.ugc = result;
+    document.getElementById('ugc-copy-row').style.display = 'flex';
+  } catch (e) {
+    setResult('ugc-result', '❌ Error: ' + e.message);
+  }
+  setLoading('ugc-loading', false);
+}
+
+// ══════════════════════════════════════════════════════
+//  IMAGE ANALYZER — works on mobile (gallery/camera) & desktop (drag-drop/click)
+// ══════════════════════════════════════════════════════
+const uploadZone = document.getElementById('upload-zone');
+const imgFileInput = document.getElementById('img-file-input');
+
+function processImageFile(file) {
+  if (!file || !file.type.startsWith('image/')) {
+    alert('Please choose an image file (JPG, PNG, or WebP).');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    imageBase64 = dataUrl.split(',')[1];
+    document.getElementById('preview-img').src = dataUrl;
+    document.getElementById('filename-tag').textContent = file.name || 'pasted-image.png';
+    document.getElementById('upload-placeholder').style.display = 'none';
+    document.getElementById('preview-wrap').classList.add('show');
+    uploadZone.classList.add('has-image');
+    document.getElementById('analyze-btn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleImageUpload(input) {
+  const file = input.files[0];
+  if (file) processImageFile(file);
+}
+
+function removeImage(evt) {
+  evt.stopPropagation();
+  imageBase64 = null;
+  imgFileInput.value = '';
+  document.getElementById('preview-wrap').classList.remove('show');
+  document.getElementById('upload-placeholder').style.display = 'block';
+  uploadZone.classList.remove('has-image');
+  document.getElementById('analyze-btn').disabled = true;
+}
+
+// Desktop drag & drop
+['dragenter', 'dragover'].forEach(evtName => {
+  uploadZone.addEventListener(evtName, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadZone.classList.add('drag-over');
+  });
+});
+['dragleave', 'dragend'].forEach(evtName => {
+  uploadZone.addEventListener(evtName, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadZone.classList.remove('drag-over');
+  });
+});
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  uploadZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (file) processImageFile(file);
+});
+
+// Paste image from clipboard (Ctrl+V) — handy on desktop
+document.addEventListener('paste', (e) => {
+  if (document.getElementById('page-analyzer').classList.contains('active')) {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        processImageFile(item.getAsFile());
+        break;
+      }
+    }
+  }
+});
+
+async function analyzeImage() {
+  if (!imageBase64) { alert('Please upload an image first'); return; }
+
+  const activeChips = [...document.getElementById('analyzer-output-chips').querySelectorAll('.chip.active')].map(c => c.textContent.trim());
+  const outputList = activeChips.length > 0 ? activeChips.join(', ') : 'full analysis';
+
+  setLoading('analyzer-loading', true);
+  document.getElementById('analyzer-result').classList.remove('show');
+  document.getElementById('analyzer-copy-row').style.display = 'none';
+
+  try {
+    const result = await callClaude(`You are an expert dropshipping product analyst. Analyze this product image and provide:
+
+${outputList.includes('Product Identification') || outputList === 'full analysis' ? '🔍 PRODUCT IDENTIFICATION\nIdentify exactly what this product is, its category, likely brand/type, materials, and key physical features visible in the image.' : ''}
+
+${outputList.includes('Selling Points') || outputList === 'full analysis' ? '💎 TOP SELLING POINTS (5 points)\nWhat makes this product desirable? Focus on visual appeal, functionality, and lifestyle benefits.' : ''}
+
+${outputList.includes('Pain Points') || outputList === 'full analysis' ? '🎯 CUSTOMER PAIN POINTS SOLVED (3-4 points)\nWhat problems does this product solve? Be specific.' : ''}
+
+${outputList.includes('Target Audience') || outputList === 'full analysis' ? '👥 TARGET AUDIENCE\nWho buys this? Age range, interests, income level, lifestyle, platforms they use.' : ''}
+
+${outputList.includes('Ad Copy') || outputList === 'full analysis' ? '✍️ INSTANT AD COPY\nWrite one Instagram caption and one WhatsApp message for this product based on what you see.' : ''}
+
+${outputList.includes('UGC Video Ideas') || outputList === 'full analysis' ? '🎬 UGC VIDEO IDEAS (3 concepts)\nThree specific video ideas for this product: concept, platform, key moment to film.' : ''}
+
+Base everything strictly on what you can observe in the image. Be specific and actionable.`, imageBase64);
+
+    setResult('analyzer-result', result);
+    generatedContent.analyzer = result;
+    document.getElementById('analyzer-copy-row').style.display = 'flex';
+  } catch (e) {
+    setResult('analyzer-result', '❌ Error: ' + e.message);
+  }
+  setLoading('analyzer-loading', false);
+}
+
+// ══════════════════════════════════════════════════════
+//  EXPORT
+// ══════════════════════════════════════════════════════
+function updateExportStatus() {
+  const items = [
+    { key: 'research', id: 'exp-research', label: '🔍 Product Research' },
+    { key: 'supplier', id: 'exp-supplier', label: '🏭 Supplier Info' },
+    { key: 'adcopy', id: 'exp-ad', label: '✍️ Ad Copy' },
+    { key: 'description', id: 'exp-desc', label: '📝 Description' },
+    { key: 'ugc', id: 'exp-ugc', label: '🎬 UGC Script' },
+    { key: 'analyzer', id: 'exp-analyzer', label: '🖼️ Image Analysis' },
+  ];
+  items.forEach(item => {
+    const el = document.getElementById(item.id);
+    if (el) {
+      const hasContent = generatedContent[item.key] && generatedContent[item.key].length > 10;
+      el.innerHTML = item.label + ' — ' + (hasContent ? '<span style="color:var(--green)">✅ Ready</span>' : '<span style="color:var(--muted)">Not generated</span>');
+    }
+  });
+}
+
+function getAllContent() {
+  const parts = [];
+  const sections = [
+    { key: 'research', title: '🔍 PRODUCT RESEARCH' },
+    { key: 'supplier', title: '🏭 SUPPLIER INFORMATION' },
+    { key: 'adcopy', title: '✍️ AD COPY' },
+    { key: 'description', title: '📝 PRODUCT DESCRIPTION' },
+    { key: 'ugc', title: '🎬 UGC VIDEO SCRIPT' },
+    { key: 'analyzer', title: '🖼️ IMAGE ANALYSIS' },
+  ];
+  sections.forEach(s => {
+    if (generatedContent[s.key]) {
+      parts.push('═══════════════════════════════════════\n' + s.title + '\n═══════════════════════════════════════\n\n' + generatedContent[s.key]);
+    }
+  });
+  return parts.join('\n\n\n');
+}
+
+function copyAllContent() {
+  const all = getAllContent();
+  if (!all) { alert('Generate some content first by using the tools in steps 1–7.'); return; }
+  navigator.clipboard.writeText(all).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ All Copied!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+function downloadAsTxt() {
+  const all = getAllContent();
+  if (!all) { alert('Generate some content first.'); return; }
+  const blob = new Blob(['DropAI — Complete Product Launch Kit\nGenerated on ' + new Date().toLocaleDateString('en-IN') + '\n\n' + all], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'dropai-launch-kit.txt';
+  a.click();
+}
+
+function generateShopifyCSV() {
+  const all = getAllContent();
+  if (!all) { alert('Generate some content first.'); return; }
+  document.getElementById('export-output').style.display = 'block';
+  document.getElementById('export-text-box').textContent = all;
+}
+
+function downloadShopifyCSV() {
+  const name = document.getElementById('shopify-name').value.trim();
+  const price = document.getElementById('shopify-price').value.trim();
+  const vendor = document.getElementById('shopify-vendor').value.trim();
+  const type = document.getElementById('shopify-type').value;
+  const description = generatedContent.description || 'Add product description';
+
+  if (!name) { alert('Enter a product name'); return; }
+
+  const csvRows = [
+    ['Handle','Title','Body (HTML)','Vendor','Product Category','Type','Tags','Published','Option1 Name','Option1 Value','Variant SKU','Variant Grams','Variant Inventory Tracker','Variant Inventory Qty','Variant Inventory Policy','Variant Fulfillment Service','Variant Price','Variant Compare At Price','Variant Requires Shipping','Variant Taxable','Status'],
+    [
+      name.toLowerCase().replace(/\s+/g,'-'),
+      name,
+      '<p>' + description.replace(/\n/g,'</p><p>').replace(/[<>]/g,'') + '</p>',
+      vendor || 'DropAI Store',
+      type,
+      type,
+      'dropshipping,india',
+      'TRUE',
+      'Title','Default Title',
+      '',300,'shopify',10,'deny','manual',
+      price || '0',
+      '',
+      'TRUE','TRUE','active'
+    ]
+  ];
+
+  const csv = csvRows.map(row => row.map(cell => '"' + String(cell).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name.replace(/\s+/g,'-').toLowerCase() + '-shopify.csv';
+  a.click();
+}
+
+// ══════════════════════════════════════════════════════
+//  UTILITY
+// ══════════════════════════════════════════════════════
+function copyResult(id) {
+  const el = document.getElementById(id);
+  const text = el.textContent || el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+
+function copyText(id) {
+  const el = document.getElementById(id);
+  const text = el.textContent || el.value;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+</script>
+<div id="paywall-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:#161622; border:1px solid rgba(168,85,247,0.3); border-radius:16px; max-width:380px; width:100%; padding:28px 24px; text-align:center;">
+    <div style="font-size:32px; margin-bottom:8px;">🔒</div>
+    <h2 style="margin:0 0 8px; font-size:20px;">Free limit reached</h2>
+    <p style="color:#94a3b8; font-size:14px; margin:0 0 20px;">You've used your <span id="pw-limit">3</span> free generations for today. Unlock unlimited access for <span id="pw-price">₹49</span>.</p>
+
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
+      <button type="button" onclick="showPayMethod('upi')" id="tab-upi" style="flex:1; padding:10px; font-size:13px; background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; border:none; border-radius:8px;">UPI (India)</button>
+      <button type="button" onclick="showPayMethod('usdt')" id="tab-usdt" style="flex:1; padding:10px; font-size:13px; background:#1e1e2e; color:#94a3b8; border:1px solid rgba(255,255,255,0.15); border-radius:8px;">USDT (Foreign)</button>
+    </div>
+
+    <div id="pay-upi" style="background:#0f0f18; border-radius:10px; padding:14px; margin-bottom:16px;">
+      <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">Pay via UPI to:</div>
+      <div style="font-weight:600; font-size:15px; color:#a855f7; word-break:break-all;" id="pw-upi">yourupi@bank</div>
+      <div style="font-size:12px; color:#94a3b8; margin-top:8px;">After payment, you'll receive an unlock code — enter it below.</div>
+    </div>
+
+    <div id="pay-usdt" style="display:none; background:#0f0f18; border-radius:10px; padding:14px; margin-bottom:16px;">
+      <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">Send USDT — TRC20 network only — to:</div>
+      <div style="font-weight:600; font-size:13px; color:#a855f7; word-break:break-all;" id="pw-usdt"></div>
+      <button type="button" onclick="copyUSDT()" style="margin-top:8px; font-size:12px; padding:6px 10px; background:#1e1e2e; border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff;">📋 Copy Address</button>
+      <div style="font-size:12px; color:#94a3b8; margin-top:8px;">After payment, you'll receive an unlock code — enter it below.</div>
+    </div>
+
+    <input id="unlock-code-input" type="text" placeholder="Enter unlock code" style="width:100%; padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:#0f0f18; color:#fff; text-align:center; font-size:15px; margin-bottom:10px; box-sizing:border-box; text-transform:uppercase;">
+    <div id="unlock-msg" style="font-size:13px; margin-bottom:14px; min-height:16px;"></div>
+
+    <button class="btn" style="width:100%; margin-bottom:10px;" onclick="tryUnlockCode()">Unlock Now</button>
+    <button style="width:100%; background:none; border:none; color:#94a3b8; font-size:13px; cursor:pointer; padding:6px;" onclick="closePaywall()">Maybe later</button>
+  </div>
+</div>
+
+</body>
+</html>
