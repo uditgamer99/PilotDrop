@@ -1244,7 +1244,7 @@ const USDT_ADDRESS = 'THc7HTraNGo27FTc369XWtid4Gpq2MGYDg'; // <-- Binance USDT (
 const PLANS = {
   weekly:   { label: 'Weekly',   price: '₹50/$0.50',   days: 7 },
   monthly:  { label: 'Monthly',  price: '₹199/$2.08',  days: 30 },
-  lifetime: { label: 'Lifetime', price: '₹499/$5.22',  days: null } // null = never expires
+  lifetime: { label: 'Yearly', price: '₹1999/$20.97',  days: 365 } // null = never expires
 };
 
 let selectedPlan = 'weekly';
@@ -1253,7 +1253,7 @@ let selectedPlan = 'weekly';
 const CODE_TO_PLAN = {
   'WEEK1': 'weekly', 'WEEK2': 'weekly', 'WEEK3': 'weekly',
   'MONTH1': 'monthly', 'MONTH2': 'monthly', 'MONTH3': 'monthly',
-  'LIFE1': 'lifetime', 'LIFE2': 'lifetime', 'LIFE3': 'lifetime'
+  'Yearly': 'Yearly1', 'Yearly2': 'Yearly3', 'Yearly4': 'Yearly5'
 };
 
 function todayKey() {
