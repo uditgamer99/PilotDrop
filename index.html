@@ -105,7 +105,7 @@
   /* ── MAIN ── */
   .main { padding: 20px 16px; max-width: 960px; margin: 0 auto; }
   .page { display: none; }
-  .page.active { display: block; }
+  .page.active { display: block; animation: fadeUp 0.35s ease both; }
 
   /* ── SECTION TITLE ── */
   .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
@@ -278,6 +278,75 @@
   .hero-title { font-size: 30px; font-weight: 700; letter-spacing: -1px; line-height: 1.2; margin-bottom: 10px; }
   .hero-title .hl { color: var(--accent2); }
   .hero-sub { color: var(--muted2); font-size: 14px; line-height: 1.6; margin-bottom: 22px; }
+
+  /* ── NEW MARKETING SECTIONS ── */
+  .home-section { margin: 36px 0; }
+  .home-section-title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .home-section-sub { color: var(--muted2); font-size: 13px; margin-bottom: 18px; line-height: 1.5; }
+
+  .compare-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .compare-card { border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); animation: fadeUp 0.5s ease both; }
+  .compare-card.old { background: var(--surface); }
+  .compare-card.new { background: linear-gradient(160deg, rgba(168,85,247,0.10), var(--surface2)); border-color: var(--accent); }
+  .compare-card h4 { font-size: 14px; margin-bottom: 12px; display:flex; align-items:center; gap:6px; }
+  .compare-card ul { list-style:none; display:flex; flex-direction:column; gap:9px; }
+  .compare-card li { font-size:12.5px; color: var(--muted2); display:flex; gap:8px; align-items:flex-start; line-height:1.4; }
+  .compare-card.new li { color: var(--text); }
+
+  .flow-visual { display:flex; align-items:center; gap:6px; overflow-x:auto; padding:6px 2px 14px; -webkit-overflow-scrolling:touch; }
+  .flow-node { flex:0 0 auto; background: var(--surface); border:1px solid var(--border); border-radius: var(--radius); padding:14px 12px; text-align:center; min-width:100px; transition: transform 0.2s, border-color 0.2s; }
+  .flow-node:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .flow-node .fi { font-size:20px; margin-bottom:6px; }
+  .flow-node .fn { font-size:11.5px; font-weight:600; }
+  .flow-arrow-sm { color: var(--muted); font-size:16px; flex:0 0 auto; }
+
+  .preview-grid { display:grid; grid-template-columns: 1fr; gap:12px; }
+  .preview-card { background: var(--surface); border:1px solid var(--border); border-radius: var(--radius); overflow:hidden; }
+  .preview-card .pc-head { padding:10px 14px; border-bottom:1px solid var(--border); font-size:12.5px; font-weight:600; display:flex; align-items:center; gap:8px; background: var(--surface2); }
+  .preview-card .pc-body { padding:14px; font-family: var(--mono); font-size:11.5px; color: var(--muted2); line-height:1.7; white-space:pre-wrap; }
+  .preview-card .pc-body b { color: var(--accent3); }
+
+  .mini-stats { display:grid; grid-template-columns: repeat(2,1fr); gap:10px; }
+  .mini-stat { background: var(--surface); border:1px solid var(--border); border-radius: var(--radius); padding:14px; text-align:center; }
+  .mini-stat .ms-val { font-size:20px; font-weight:700; font-family: var(--mono); color: var(--accent2); }
+  .mini-stat .ms-lbl { font-size:10.5px; color: var(--muted); margin-top:3px; text-transform:uppercase; letter-spacing:0.4px; }
+
+  .pricing-grid { display:grid; grid-template-columns: 1fr; gap:12px; }
+  .price-card { background: var(--surface); border:1px solid var(--border); border-radius: var(--radius); padding:18px; position:relative; transition: border-color 0.2s, transform 0.2s; }
+  .price-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .price-card.featured { border: 2px solid var(--accent2); background: linear-gradient(160deg, rgba(168,85,247,0.10), var(--surface)); }
+  .price-card .pc-tag { position:absolute; top:-10px; right:14px; background: linear-gradient(135deg, var(--green), #059669); color:#fff; font-size:10px; font-weight:700; padding:3px 10px; border-radius:20px; }
+  .price-card h4 { font-size:15px; margin-bottom:4px; }
+  .price-card .pc-price { font-size:26px; font-weight:700; font-family: var(--mono); margin:6px 0; }
+  .price-card .pc-price span { font-size:12px; color: var(--muted); font-weight:400; }
+  .price-card ul { list-style:none; margin:12px 0; display:flex; flex-direction:column; gap:7px; }
+  .price-card li { font-size:12px; color: var(--muted2); display:flex; gap:6px; }
+
+  .testi-grid { display:grid; grid-template-columns:1fr; gap:12px; }
+  .testi-card { background: var(--surface); border:1px solid var(--border); border-radius: var(--radius); padding:16px; }
+  .testi-card .t-quote { font-size:13px; color: var(--text); line-height:1.6; margin-bottom:10px; }
+  .testi-card .t-author { font-size:11.5px; color: var(--muted); display:flex; align-items:center; gap:6px; }
+  .testi-card .t-avatar { width:22px; height:22px; border-radius:50%; background: linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; }
+
+  .faq-item { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom:8px; overflow:hidden; background: var(--surface); }
+  .faq-q { padding:14px 16px; font-size:13.5px; font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .faq-q .faq-arrow { transition: transform 0.25s; color: var(--muted); flex:0 0 auto; }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+  .faq-a { max-height:0; overflow:hidden; transition: max-height 0.3s ease, padding 0.3s ease; font-size:12.5px; color: var(--muted2); line-height:1.6; padding:0 16px; }
+  .faq-item.open .faq-a { max-height:300px; padding:0 16px 16px; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
+  .fade-in { animation: fadeUp 0.5s ease both; }
+
+  @media (min-width: 640px) {
+    .preview-grid { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: repeat(4,1fr); }
+    .testi-grid { grid-template-columns: 1fr 1fr; }
+    .mini-stats { grid-template-columns: repeat(4,1fr); }
+  }
+  @media (max-width: 480px) {
+    .compare-wrap { grid-template-columns: 1fr; }
+  }
   .features { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
   @media (max-width: 480px) { .features { grid-template-columns: 1fr; } }
   .feature-card {
@@ -505,8 +574,8 @@
 ════════════════════════════════════════════════════ -->
 <div class="page active" id="page-home">
   <div style="margin-bottom:20px;">
-    <div class="hero-title">Launch a Dropshipping Product<br><span class="hl">in 15 Minutes</span> With AI.</div>
-    <div class="hero-sub">Research. Find suppliers. Calculate profit. Create ads. All in one place.</div>
+    <div class="hero-title">Research Winning Products Faster with AI.<br><span class="hl">Everything in One Dashboard.</span></div>
+    <div class="hero-sub">Research. Find suppliers. Calculate profit. Create ads. All in one place — no signup, 12 free credits every day.</div>
   </div>
 
   <div class="workflow-home">
@@ -526,7 +595,70 @@
       <div class="wf-arr">→</div>
       <div class="wf-step" onclick="showPage('analyzer')"><span class="n">7</span>Image AI</div>
       <div class="wf-arr">→</div>
-      <div class="wf-step" onclick="showPage('export')"><span class="n">8</span>Export</div>
+      <div class="wf-step" onclick="showPage('angles')"><span class="n">8</span>Angles</div>
+      <div class="wf-arr">→</div>
+      <div class="wf-step" onclick="showPage('persona')"><span class="n">9</span>Persona</div>
+      <div class="wf-arr">→</div>
+      <div class="wf-step" onclick="showPage('hooks')"><span class="n">10</span>Viral Hooks</div>
+      <div class="wf-arr">→</div>
+      <div class="wf-step" onclick="showPage('export')"><span class="n">11</span>Export</div>
+    </div>
+  </div>
+
+  <!-- ═══ COMPARISON: Traditional vs PilotDrop ═══ -->
+  <div class="home-section fade-in">
+    <div class="home-section-title">🆚 Traditional Research vs PilotDrop</div>
+    <div class="home-section-sub">Stop tab-hopping between five different tools for one product launch.</div>
+    <div class="compare-wrap">
+      <div class="compare-card old">
+        <h4>😩 Traditional Way</h4>
+        <ul>
+          <li>❌ 6+ browser tabs open at once</li>
+          <li>❌ Manually cross-checking demand & competition</li>
+          <li>❌ Separate tools for ad copy, descriptions & scripts</li>
+          <li>❌ Copy-pasting between apps to piece it together</li>
+          <li>❌ Hours per product, before you even list it</li>
+        </ul>
+      </div>
+      <div class="compare-card new">
+        <h4>⚡ With PilotDrop</h4>
+        <ul>
+          <li>✅ One dashboard, everything in one place</li>
+          <li>✅ AI-assisted research in seconds</li>
+          <li>✅ Ad copy, descriptions & scripts generated instantly</li>
+          <li>✅ Export everything with one click</li>
+          <li>✅ Minutes per product, start to finish</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ VISUAL WORKFLOW ═══ -->
+  <div class="home-section fade-in">
+    <div class="home-section-title">🧭 How It Works</div>
+    <div class="home-section-sub">Five steps from idea to launch-ready product.</div>
+    <div class="flow-visual">
+      <div class="flow-node" onclick="showPage('research')"><div class="fi">🔍</div><div class="fn">Product<br>Research</div></div>
+      <div class="flow-arrow-sm">→</div>
+      <div class="flow-node" onclick="showPage('analyzer')"><div class="fi">🖼️</div><div class="fn">Product<br>Analysis</div></div>
+      <div class="flow-arrow-sm">→</div>
+      <div class="flow-node" onclick="showPage('supplier')"><div class="fi">🏭</div><div class="fn">Supplier<br>Finder</div></div>
+      <div class="flow-arrow-sm">→</div>
+      <div class="flow-node" onclick="showPage('calculator')"><div class="fi">💰</div><div class="fn">Profit<br>Calculator</div></div>
+      <div class="flow-arrow-sm">→</div>
+      <div class="flow-node" onclick="showPage('export')"><div class="fi">📦</div><div class="fn">Export</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ MINI STATS DASHBOARD ═══ -->
+  <div class="home-section fade-in">
+    <div class="home-section-title">📊 Your Activity</div>
+    <div class="home-section-sub" id="mini-stats-sub">Tracked on this device.</div>
+    <div class="mini-stats">
+      <div class="mini-stat"><div class="ms-val" id="ms-credits">12/12</div><div class="ms-lbl">Credits Left Today</div></div>
+      <div class="mini-stat"><div class="ms-val" id="ms-research">0</div><div class="ms-lbl">Products Researched</div></div>
+      <div class="mini-stat"><div class="ms-val" id="ms-suppliers">0</div><div class="ms-lbl">Suppliers Found</div></div>
+      <div class="mini-stat"><div class="ms-val" id="ms-timesaved">0h 0m</div><div class="ms-lbl">Est. Time Saved</div></div>
     </div>
   </div>
 
@@ -592,6 +724,142 @@
       <div class="feature-icon">📦</div>
       <div class="feature-name">Export Everything</div>
       <div class="feature-desc">PDF report, Shopify CSV, one-click copy all content.</div>
+    </div>
+  </div>
+
+  <!-- ═══ TOOL PREVIEWS ═══ -->
+  <div class="home-section fade-in">
+    <div class="home-section-title">👀 See It In Action</div>
+    <div class="home-section-sub">A preview of what the AI actually generates — tap any tool above to try it live.</div>
+    <div class="preview-grid">
+      <div class="preview-card">
+        <div class="pc-head">🔍 Product Research</div>
+        <div class="pc-body"><b>Demand Score:</b> 8.5/10
+<b>Competition:</b> Medium
+<b>Viral Potential:</b> High
+<b>Target Audience:</b> Gen Z, fitness enthusiasts...</div>
+      </div>
+      <div class="preview-card">
+        <div class="pc-head">✍️ Ad Copy Generator</div>
+        <div class="pc-body"><b>Hook A:</b> "POV: you finally found the one product that..."
+<b>Platform:</b> Instagram Reels
+<b>Tone:</b> Friendly & Casual</div>
+      </div>
+      <div class="preview-card">
+        <div class="pc-head">🏭 Supplier Finder</div>
+        <div class="pc-body"><b>Platform:</b> AliExpress
+<b>Trust Score:</b> 8/10
+<b>Est. Cost:</b> $4.20/unit
+<b>MOQ:</b> 1 unit</div>
+      </div>
+      <div class="preview-card">
+        <div class="pc-head">🎯 Winning Angles</div>
+        <div class="pc-body"><b>Angle:</b> "The busy parent's shortcut"
+<b>Pain Point:</b> No time for complicated routines
+<b>Trigger:</b> Relief, simplicity</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRICING ═══ -->
+  <div class="home-section fade-in">
+    <div class="home-section-title">💳 Simple Pricing</div>
+    <div class="home-section-sub">Start free with 12 credits every day. Upgrade anytime for unlimited generations.</div>
+    <div class="pricing-grid">
+      <div class="price-card featured">
+        <div class="pc-tag">START HERE</div>
+        <h4>🎁 Free Plan</h4>
+        <div class="pc-price">₹0<span>/forever</span></div>
+        <ul>
+          <li>✅ 12 free credits every day</li>
+          <li>❌ No unlimited generations</li>
+          <li>✅ All 11 AI tools unlocked</li>
+          <li>✅ No credit card required</li>
+          <li>✅ No signup needed</li>
+        </ul>
+        <button class="btn" style="width:100%;" onclick="showPage('research')">Start Free →</button>
+      </div>
+      <div class="price-card" onclick="selectPlan('weekly'); showPaywall();" style="cursor:pointer;">
+        <h4>⚡ Weekly</h4>
+        <div class="pc-price">₹100<span>/week</span></div>
+        <ul>
+          <li>✅ Unlimited generations</li>
+          <li>✅ All 11 AI tools</li>
+          <li>✅ UPI or crypto payment</li>
+        </ul>
+        <button class="btn outline sm" style="width:100%;">Buy Weekly →</button>
+      </div>
+      <div class="price-card" onclick="selectPlan('monthly'); showPaywall();" style="cursor:pointer;">
+        <h4>🚀 Monthly</h4>
+        <div class="pc-price">₹299<span>/month</span></div>
+        <ul>
+          <li>✅ Unlimited generations</li>
+          <li>✅ All 11 AI tools</li>
+          <li>✅ Best for regular sellers</li>
+        </ul>
+        <button class="btn outline sm" style="width:100%;">Buy Monthly →</button>
+      </div>
+      <div class="price-card" onclick="selectPlan('yearly'); showPaywall();" style="cursor:pointer;">
+        <h4>🏆 Yearly</h4>
+        <div class="pc-price">₹1999<span>/year</span></div>
+        <ul>
+          <li>✅ Unlimited generations</li>
+          <li>✅ All 11 AI tools</li>
+          <li>✅ Best value for serious sellers</li>
+        </ul>
+        <button class="btn outline sm" style="width:100%;">Buy Yearly →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TESTIMONIALS ═══ -->
+  <div class="home-section fade-in">
+    <div class="home-section-title">💬 What People Are Saying</div>
+    <div class="home-section-sub">Real feedback from our Product Hunt launch.</div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="t-quote">"The image analysis feature actually caught a detail I missed on a supplier's product photo, which was a nice surprise."</div>
+        <div class="t-author"><span class="t-avatar">E</span> Ebru</div>
+      </div>
+      <div class="testi-card">
+        <div class="t-quote">"This looks like a solid idea for anyone tired of bouncing between tabs."</div>
+        <div class="t-author"><span class="t-avatar">C</span> Cansel Efendigil</div>
+      </div>
+      <div class="testi-card">
+        <div class="t-quote">"The no signup thing is actually nice — the all-in-one page approach is genuinely useful."</div>
+        <div class="t-author"><span class="t-avatar">T</span> Tunahan</div>
+      </div>
+      <div class="testi-card">
+        <div class="t-quote">"The all-in-one page approach is genuinely useful, having everything from product research to ad copy without tab switching saved me a bunch of time."</div>
+        <div class="t-author"><span class="t-avatar">Ö</span> Özlem Özgünç</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div class="home-section fade-in">
+    <div class="home-section-title">❓ Frequently Asked Questions</div>
+    <div id="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span>What are credits and how do they work?</span><span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Every AI generation (research, ad copy, suppliers, etc.) uses 1 credit. You get 12 free credits every 24 hours, tracked from your first use — not reset at midnight.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span>Is the free plan really free forever?</span><span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Yes — 12 credits daily, every day, no expiry, no credit card, no signup. You only pay if you want unlimited generations instead of the daily limit.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span>How does paid access work?</span><span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Pick Weekly, Monthly, or Yearly, pay via UPI or USDT, DM your payment screenshot on Instagram, and you'll get an unlock code for unlimited generations for that period.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span>Do I need to cancel my subscription?</span><span class="faq-arrow">▼</span></div>
+        <div class="faq-a">There's no auto-renewal — plans simply expire after the period ends, and you can choose to renew or not. No surprise charges.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span>Is the AI data (suppliers, pricing) 100% accurate?</span><span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Suppliers and pricing are AI-generated estimates, not live scraped data. Always verify using the one-tap "Verify Live" links before ordering.</div>
+      </div>
     </div>
   </div>
 
@@ -1307,6 +1575,7 @@ function showPage(id) {
   if (ws) ws.classList.add('active');
   updateExportStatus();
   if (id === 'supplier') refreshSupplierOptions();
+  if (id === 'home') updateMiniStats();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1318,7 +1587,50 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   refreshSupplierOptions();
   updateAttemptsBar();
+  updateMiniStats();
 });
+
+// ══════════════════════════════════════════════════════
+//  ACTIVITY STATS (local device only)
+// ══════════════════════════════════════════════════════
+function incrementActivityStat(key) {
+  const stats = JSON.parse(localStorage.getItem('pd_activity') || '{}');
+  stats[key] = (stats[key] || 0) + 1;
+  localStorage.setItem('pd_activity', JSON.stringify(stats));
+  updateMiniStats();
+}
+
+function updateMiniStats() {
+  const stats = JSON.parse(localStorage.getItem('pd_activity') || '{}');
+  const researched = stats.researched || 0;
+  const suppliers = stats.suppliers || 0;
+  // rough estimate: ~8 min saved per research run, ~6 min per supplier search vs doing it manually
+  const minutesSaved = (researched * 8) + (suppliers * 6);
+  const hrs = Math.floor(minutesSaved / 60);
+  const mins = minutesSaved % 60;
+
+  const credEl = document.getElementById('ms-credits');
+  const resEl = document.getElementById('ms-research');
+  const supEl = document.getElementById('ms-suppliers');
+  const timeEl = document.getElementById('ms-timesaved');
+  if (!credEl) return;
+
+  const left = isUnlocked() ? '∞' : Math.max(0, FREE_LIMIT_PER_DAY - getUsageCount());
+  credEl.textContent = isUnlocked() ? '∞' : `${left}/${FREE_LIMIT_PER_DAY}`;
+  resEl.textContent = researched;
+  supEl.textContent = suppliers;
+  timeEl.textContent = `${hrs}h ${mins}m`;
+}
+
+// ══════════════════════════════════════════════════════
+//  FAQ ACCORDION
+// ══════════════════════════════════════════════════════
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
 
 // ══════════════════════════════════════════════════════
 //  SELECTION HELPERS
@@ -1600,6 +1912,7 @@ Be specific with real ₹ estimates. Focus on products genuinely selling well in
     setResult('research-result', cleanResult);
     generatedContent.research = cleanResult;
     document.getElementById('research-copy-row').style.display = 'flex';
+    incrementActivityStat('researched');
 
     // Update supplier search keyword
     const kw = document.getElementById('supplier-keyword-text');
@@ -1719,6 +2032,7 @@ Be specific with ${cur} amounts and platform names relevant to sellers shipping 
     generatedContent.supplier = result;
     document.getElementById('supplier-disclaimer').style.display = 'block';
     document.getElementById('supplier-verify-cta').style.display = 'block';
+    incrementActivityStat('suppliers');
   } catch (e) {
     setResult('supplier-result', '❌ Error: ' + e.message);
     document.getElementById('supplier-disclaimer').style.display = 'none';
