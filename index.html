@@ -1817,7 +1817,7 @@ async function callClaude(prompt, imageData) {
     const response = await fetch('/api/groq-proxy', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({messages:[{role:'user',content:prompt}], model:'llama-3.3-70b-versatile', max_tokens:1500})
+      body: JSON.stringify({messages:[{role:'user',content:prompt}], model:'openai/gpt-oss-120b', max_tokens:1500})
     });
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
@@ -1830,7 +1830,7 @@ async function callClaude(prompt, imageData) {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({
-      model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      model: 'qwen/qwen3.6-27b',
       messages: [{
         role: 'user',
         content: [
@@ -2699,7 +2699,7 @@ function copyText(id) {
     <div id="pay-upi" style="background:#0f0f18; border-radius:10px; padding:14px; margin-bottom:16px;">
       <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">Pay via UPI to:</div>
       <div style="font-weight:600; font-size:15px; color:#a855f7; word-break:break-all;" id="pw-upi">yourupi@bank</div>
-      <div style="font-size:12px; color:#94a3b8; margin-top:8px;">After paying, DM your screenshot on Instagram to get your code (I'll Reach you in under 3hours).</div>
+      <div style="font-size:12px; color:#94a3b8; margin-top:8px;">After paying, DM your screenshot on Instagram to get your code.</div>
     </div>
 
     <div id="pay-usdt" style="display:none; background:#0f0f18; border-radius:10px; padding:14px; margin-bottom:16px;">
