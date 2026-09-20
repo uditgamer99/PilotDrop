@@ -1702,18 +1702,25 @@ const PLANS = {
 
 let selectedPlan = 'weekly';
 
-// map each code you hand out to a plan — add more per buyer as you sell
-const CODE_TO_PLAN = {
-  'WEEK1': 'weekly', 'WEEK2': 'weekly', 'WEEK3': 'weekly',
-  'MONTH1': 'monthly', 'MONTH2': 'monthly', 'MONTH3': 'monthly',
-  'YEAR1': 'yearly', 'YEAR2': 'yearly', 'YEAR3': 'yearly'
-};
+// NOTE: unlock codes are no longer hardcoded here. Each code is single-use,
+// generated in Supabase per payment, and redeemed via /api/redeem-code,
+// which returns a signed token. The token's expiry is verified SERVER-SIDE
+// on every AI call (see api/groq-proxy.js) — editing localStorage cannot
+// forge access anymore.
 
 function isUnlocked() {
+  // This is just a fast UI check (for showing/hiding the credits bar).
+  // The real enforcement happens server-side in /api/groq-proxy.js.
   const raw = localStorage.getItem('pd_unlock');
   if (!raw) return false;
   const data = JSON.parse(raw);
-  return data.expiresAt && Date.now() < data.expiresAt;
+  return data.expiresAt && Date.now() < data.expiresAt && !!data.token;
+}
+
+function getUnlockToken() {
+  const raw = localStorage.getItem('pd_unlock');
+  if (!raw) return null;
+  try { return JSON.parse(raw).token || null; } catch { return null; }
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -1790,21 +1797,40 @@ function closePaywall() {
   document.getElementById('paywall-overlay').style.display = 'none';
 }
 
-function tryUnlockCode() {
+async function tryUnlockCode() {
   const input = document.getElementById('unlock-code-input');
   const msg = document.getElementById('unlock-msg');
   const code = input.value.trim().toUpperCase();
-  const plan = CODE_TO_PLAN[code];
-  if (plan) {
-    const days = PLANS[plan].days;
-    const expiresAt = days ? Date.now() + days * 24 * 60 * 60 * 1000 : null;
-    localStorage.setItem('pd_unlock', JSON.stringify({ plan, expiresAt }));
-    msg.textContent = `✅ ${PLANS[plan].label} plan unlocked!`;
+  if (!code) return;
+
+  msg.textContent = 'Checking code…';
+  msg.style.color = '#94a3b8';
+
+  try {
+    const res = await fetch('/api/redeem-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      msg.textContent = '❌ ' + (data.error || 'Invalid code.');
+      msg.style.color = '#ef4444';
+      return;
+    }
+
+    localStorage.setItem('pd_unlock', JSON.stringify({
+      plan: data.plan,
+      expiresAt: data.expiresAt,
+      token: data.token
+    }));
+    msg.textContent = `✅ ${PLANS[data.plan].label} plan unlocked!`;
     msg.style.color = '#22c55e';
     updateAttemptsBar();
     setTimeout(closePaywall, 1200);
-  } else {
-    msg.textContent = '❌ Invalid code. Check spelling or contact us.';
+  } catch (e) {
+    msg.textContent = '❌ Network error, try again.';
     msg.style.color = '#ef4444';
   }
 }
@@ -1812,16 +1838,18 @@ function tryUnlockCode() {
 async function callClaude(prompt, imageData) {
   if (!checkAccess()) throw new Error('Free limit reached — unlock to continue.');
 
+  const unlockToken = getUnlockToken();
+
   // text-only tools (research, supplier, ad copy, description, ugc)
   if (!imageData) {
     const response = await fetch('/api/groq-proxy', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({messages:[{role:'user',content:prompt}], model:'openai/gpt-oss-120b', max_tokens:1500})
+      body: JSON.stringify({messages:[{role:'user',content:prompt}], model:'openai/gpt-oss-120b', max_tokens:1500, unlockToken})
     });
     const data = await response.json();
-    if (data.error) throw new Error(data.error.message);
-    incrementUsage();
+    if (data.error) throw new Error(data.error.message || data.error);
+    if (!unlockToken) incrementUsage();
     return data.choices[0].message.content;
   }
 
@@ -1838,12 +1866,13 @@ async function callClaude(prompt, imageData) {
           { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + imageData } }
         ]
       }],
-      max_tokens: 1500
+      max_tokens: 1500,
+      unlockToken
     })
   });
   const data = await response.json();
-  if (data.error) throw new Error(data.error.message);
-  incrementUsage();
+  if (data.error) throw new Error(data.error.message || data.error);
+  if (!unlockToken) incrementUsage();
   return data.choices[0].message.content;
 }
 
