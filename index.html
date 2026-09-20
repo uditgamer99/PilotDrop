@@ -1793,6 +1793,63 @@ function copyUSDT() {
   alert('Address copied!');
 }
 
+let usdtPollInterval = null;
+
+async function startUsdtPayment() {
+  const btn = document.getElementById('usdt-pay-btn');
+  const status = document.getElementById('usdt-status');
+  btn.disabled = true;
+  status.textContent = 'Creating payment link...';
+  status.style.color = '#94a3b8';
+
+  try {
+    const res = await fetch('/api/create-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: selectedPlan })
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.invoice_url) {
+      status.textContent = '❌ ' + (data.error || 'Could not start payment.');
+      status.style.color = '#ef4444';
+      btn.disabled = false;
+      return;
+    }
+
+    // open the NowPayments hosted checkout in a new tab
+    window.open(data.invoice_url, '_blank');
+    status.textContent = '⏳ Waiting for payment confirmation... complete payment in the tab that opened.';
+    status.style.color = '#f59e0b';
+
+    if (usdtPollInterval) clearInterval(usdtPollInterval);
+    usdtPollInterval = setInterval(() => pollUsdtPayment(data.order_id), 4000);
+  } catch (e) {
+    status.textContent = '❌ Network error, try again.';
+    status.style.color = '#ef4444';
+    btn.disabled = false;
+  }
+}
+
+async function pollUsdtPayment(orderId) {
+  const status = document.getElementById('usdt-status');
+  try {
+    const res = await fetch('/api/check-payment?order_id=' + encodeURIComponent(orderId));
+    const data = await res.json();
+
+    if (data.ready) {
+      clearInterval(usdtPollInterval);
+      usdtPollInterval = null;
+      document.getElementById('unlock-code-input').value = data.code;
+      status.textContent = `✅ Payment confirmed! Code ${data.code} filled in below — unlocking...`;
+      status.style.color = '#22c55e';
+      tryUnlockCode();
+    }
+  } catch (e) {
+    // silent — will retry on next interval
+  }
+}
+
 function closePaywall() {
   document.getElementById('paywall-overlay').style.display = 'none';
 }
@@ -2732,11 +2789,11 @@ function copyText(id) {
     </div>
 
     <div id="pay-usdt" style="display:none; background:#0f0f18; border-radius:10px; padding:14px; margin-bottom:16px;">
-      <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">Send USDT — TRC20 network only — to:</div>
-      <div style="font-weight:600; font-size:13px; color:#a855f7; word-break:break-all;" id="pw-usdt"></div>
-      <button type="button" onclick="copyUSDT()" style="margin-top:8px; font-size:12px; padding:6px 10px; background:#1e1e2e; border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff;">📋 Copy Address</button>
-      <div style="font-size:12px; color:#94a3b8; margin-top:8px;">After paying, DM your screenshot on Instagram to get your code.</div>
+      <div style="font-size:12px; color:#94a3b8; margin-bottom:10px;">Pay automatically with USDT — your code will appear here the moment payment confirms, no DM needed.</div>
+      <button type="button" id="usdt-pay-btn" onclick="startUsdtPayment()" style="width:100%; padding:12px; border-radius:8px; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:600; font-size:14px; border:none; cursor:pointer;">⚡ Pay with USDT (Auto)</button>
+      <div id="usdt-status" style="font-size:12px; color:#94a3b8; margin-top:10px; min-height:16px;"></div>
     </div>
+
 
     <a href="https://instagram.com/pilotdrop1/" target="_blank" style="display:block; text-align:center; padding:12px; border-radius:8px; background:linear-gradient(135deg,#833ab4,#e1306c); color:#fff; font-weight:600; font-size:14px; text-decoration:none; margin-bottom:14px;">📩 DM me on Instagram to get your code</a>
 
